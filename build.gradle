@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'eclipse'
+    id 'idea'
+    id 'checkstyle'
+
+    id 'net.minecrell.licenser' version '0.1.5'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+defaultTasks 'clean', 'updateLicenses', 'build', 'shadowJar'
+
+group = 'net.caseif.cubic'
+version = '0.1.0-SNAPSHOT'
+archivesBaseName = 'cubic'
+
+ext.projectName = 'Cubic'
+ext.packaging = 'jar'
+ext.inceptionYear = '2016'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+}
+
+ext {
+    guava = 'com.google.guava:guava:19.0'
+    lwjgl = 'org.lwjgl:lwjgl:3.0.0b'
+}
+
+dependencies {
+    compile guava
+    compile lwjgl
+    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-windows'
+    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-linux'
+    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-osx'
+
+    checkstyle 'org.spongepowered:checkstyle:6.1.1-sponge1'
+}
+
+shadowJar {
+    dependencies {
+        include dependency(guava)
+        include dependency(lwjgl)
+    }
+    classifier = ''
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.java
+    from sourceSets.main.resources
+    classifier = 'sources'
+}
+
+artifacts {
+    archives shadowJar
+    archives sourceJar
+}
+
+// License header formatting
+license {
+    include '**/*.java'
+    ignoreFailures false
+}
+
+// check code style
+checkstyle {
+    configProperties = [
+            'name': project.name,
+            'year': project.inceptionYear,
+            'basedir': project.projectDir,
+            'severity': 'warning'
+    ]
+    configFile = file('etc/checkstyle.xml')
+}
+
+tasks.withType(Checkstyle) {
+    exclude '**/*.properties'
+    exclude '**/*.yml'
+}
+
+jar.manifest.mainAttributes(
+        "Built-By": System.properties['user.name'],
+        "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
+        "Main-Class": "net.caseif.cubic.Main"
+)
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}
