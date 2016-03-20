@@ -185,7 +185,7 @@ public class SimpleWorldRenderer {
     
     private static void applyVertex(FloatBuffer fb, Vector3f location, Vector4f color) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
-        fb.put(color.getX()).put(color.getY()).put(color.getZ()).put(color.getW());
+        //fb.put(color.getX()).put(color.getY()).put(color.getZ()).put(color.getW());
     }
 
     private static void renderVbo(int handle, FloatBuffer vbo) {
@@ -193,9 +193,9 @@ public class SimpleWorldRenderer {
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
         glPushMatrix();
-        glVertexPointer(3, GL_FLOAT, 28, 0);
-        glColorPointer(4, GL_FLOAT, 28, 12);
-        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 7);
+        glVertexPointer(3, GL_FLOAT, 12, 0);
+        //glColorPointer(4, GL_FLOAT, 28, 12);
+        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 3);
         glPopMatrix();
     }
 
