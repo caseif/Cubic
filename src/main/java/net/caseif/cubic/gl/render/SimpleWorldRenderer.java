@@ -59,11 +59,8 @@ public class SimpleWorldRenderer {
 
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
-        /*System.out.println("Uniform location: " + glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform"));
-        IntBuffer total = IntBuffer.allocate(1);
-        glGetProgramiv(ShaderHelper.cameraShader, GL_ACTIVE_UNIFORMS, total);
-        System.out.println("Total uniform count: " + total.array()[0]);
-        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform"), false, CAMERA.getLocationBuffer());*/
+        int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform");
+        glUniformMatrix4fv(uniformLoc, false, CAMERA.getLocationBuffer());
         /*glBegin(GL_QUADS);
         world.getChunks().forEach(SimpleWorldRenderer::renderChunk);
         glEnd();*/

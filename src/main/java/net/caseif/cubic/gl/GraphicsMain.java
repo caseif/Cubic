@@ -128,19 +128,6 @@ public class GraphicsMain implements Runnable {
             ex.printStackTrace();
         }
 
-        glUseProgram(ShaderHelper.cameraShader);
-
-        float ratio = (float) WINDOW_HEIGHT / WINDOW_WIDTH;
-        final float orthoRadius = 10f;
-        Matrix4f pr_matrix = Matrix4f.orthographic(-orthoRadius, orthoRadius,
-                -orthoRadius * ratio, orthoRadius * ratio,
-                -orthoRadius, orthoRadius);
-        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, pr_matrix.toBuffer());
-
-        glUniform1i(glGetUniformLocation(ShaderHelper.cameraShader, "tex"), 1);
-
-        glUseProgram(0);
-
         // show the window
         glfwShowWindow(window);
     }
