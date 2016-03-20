@@ -28,6 +28,8 @@ package net.caseif.cubic.gl.callback;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 
+import net.caseif.cubic.gl.GraphicsMain;
+
 import org.lwjgl.glfw.GLFWKeyCallback;
 
 public class KeyCallback extends GLFWKeyCallback {
@@ -36,6 +38,10 @@ public class KeyCallback extends GLFWKeyCallback {
     public void invoke(long window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
             glfwSetWindowShouldClose(window, GL_TRUE);
+        } else if (key == GLFW_KEY_A) {
+            GraphicsMain.CAMERA.moveLeft(10);
+        } else if (key == GLFW_KEY_D) {
+            GraphicsMain.CAMERA.moveRight(10);
         }
     }
 

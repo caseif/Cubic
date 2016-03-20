@@ -25,14 +25,21 @@
 
 package net.caseif.cubic.gl;
 
+import static net.caseif.cubic.math.matrix.Matrix4f.orthographic;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import net.caseif.cubic.Main;
 import net.caseif.cubic.gl.callback.KeyCallback;
+import net.caseif.cubic.gl.render.Camera;
+import net.caseif.cubic.gl.render.ShaderHelper;
 import net.caseif.cubic.gl.render.SimpleWorldRenderer;
-import net.caseif.cubic.math.Vector2f;
-import net.caseif.cubic.math.Vector3f;
+import net.caseif.cubic.math.matrix.Matrix4f;
+import net.caseif.cubic.math.vector.Vector2f;
+import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
 import net.caseif.cubic.world.block.Block;
@@ -42,18 +49,21 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+
+import java.io.IOException;
 
 public class GraphicsMain implements Runnable {
 
     private static final int WINDOW_WIDTH = 640;
     private static final int WINDOW_HEIGHT = 480;
+    public static final Camera CAMERA = new Camera();
 
     private GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
     private GLFWKeyCallback keyCallback = new KeyCallback();
 
     private long window;
-
-    private World world;
 
     public void run() {
         try {
@@ -105,17 +115,26 @@ public class GraphicsMain implements Runnable {
         // enable vsync
         glfwSwapInterval(1);
 
-        //GLContext.createFromCurrent();
-
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // show the window
         glfwShowWindow(window);
 
-        createDummyWorld();
+        try {
+            ShaderHelper.initCameraShader();
+        } catch (IOException ex) {
+            System.err.println("Failed to initialize shaders!");
+            ex.printStackTrace();
+        }
+
+        glUseProgram(ShaderHelper.cameraShader);
+        float ratio = WINDOW_WIDTH / WINDOW_HEIGHT;
+        Matrix4f pr_matrix = Matrix4f.orthographic(-ratio, ratio, -1f, 1f, 50f, -50f);
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, pr_matrix.toBuffer());
+        glUniform1i(glGetUniformLocation(ShaderHelper.cameraShader, "tex"), 1);
+        glUseProgram(0);
     }
 
     private void deinit() {
@@ -137,13 +156,12 @@ public class GraphicsMain implements Runnable {
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            float ratio = WINDOW_WIDTH / WINDOW_HEIGHT;
-            glOrtho(-ratio, ratio, -1f, 1f, 50f, -50f);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glRotatef((float) GLFW.glfwGetTime() * 30f, 0f, 1f, 1f);
+            glRotatef((float) GLFW.glfwGetTime() * 30f, 1f, 1f, 1f);
 
-            SimpleWorldRenderer.render(world);
+            glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "vw_matrix"), false, CAMERA.getLocationBuffer());
+            glUseProgram(ShaderHelper.cameraShader);
+            SimpleWorldRenderer.render(Main.world);
+            glUseProgram(0);
 
             // swap the buffers
             glfwSwapBuffers(window);
@@ -151,13 +169,6 @@ public class GraphicsMain implements Runnable {
             // poll for events (like key events)
             glfwPollEvents();
         }
-    }
-
-    public void createDummyWorld() {
-        world = new World("world");
-        Chunk chunk = new Chunk(world, new Vector2f(0, 0));
-        world.addChunk(chunk);
-        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3f(0, 0, 0));
     }
 
 }

@@ -27,7 +27,7 @@ package net.caseif.cubic.world;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import net.caseif.cubic.math.Vector2f;
+import net.caseif.cubic.math.vector.Vector2f;
 
 import java.util.Collection;
 import java.util.HashMap;

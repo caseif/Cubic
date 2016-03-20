@@ -27,7 +27,7 @@ package net.caseif.cubic.gl.render;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import net.caseif.cubic.math.Vector3f;
+import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
 import net.caseif.cubic.world.block.Block;

@@ -25,7 +25,7 @@
 
 package net.caseif.cubic.world.block;
 
-import net.caseif.cubic.math.Vector3f;
+import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 
 public class Block {

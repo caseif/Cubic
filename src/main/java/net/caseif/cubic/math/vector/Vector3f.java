@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.math;
+package net.caseif.cubic.math.vector;
 
 public class Vector3f {
 
@@ -47,6 +47,10 @@ public class Vector3f {
 
     public float getZ() {
         return z;
+    }
+
+    public Vector3f add(float x, float y, float z) {
+        return new Vector3f(this.x + x, this.y + y, this.z + z);
     }
 
     @Override

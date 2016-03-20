@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.math;
+package net.caseif.cubic.math.vector;
 
 public class Vector2f {
 
@@ -41,10 +41,6 @@ public class Vector2f {
 
     public float getY() {
         return y;
-    }
-
-    public Vector2f multiply(Vector2f vector) {
-        return new Vector2f(x * vector.getX(), y * vector.getY());
     }
 
     public Vector2f multiply(float scalar) {

@@ -26,16 +26,31 @@
 package net.caseif.cubic;
 
 import net.caseif.cubic.gl.GraphicsMain;
+import net.caseif.cubic.math.vector.Vector2f;
+import net.caseif.cubic.math.vector.Vector3f;
+import net.caseif.cubic.world.Chunk;
+import net.caseif.cubic.world.World;
+import net.caseif.cubic.world.block.Block;
 
 public class Main {
 
+    public static World world;
+
     public static void main(String[] args) {
+        createDummyWorld();
         initGraphicsThread();
     }
 
     private static void initGraphicsThread() {
         Thread t = new Thread(new GraphicsMain());
         t.start();
+    }
+
+    private static void createDummyWorld() {
+        world = new World("world");
+        Chunk chunk = new Chunk(world, new Vector2f(0, 0));
+        world.addChunk(chunk);
+        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3f(0, 0, 0));
     }
 
 }
