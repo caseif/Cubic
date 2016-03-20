@@ -33,14 +33,17 @@ repositories {
 ext {
     guava = 'com.google.guava:guava:19.0'
     lwjgl = 'org.lwjgl:lwjgl:3.0.0b'
+    natives_linux = 'org.lwjgl:lwjgl-platform:3.0.0b:natives-linux'
+    natives_osx = 'org.lwjgl:lwjgl-platform:3.0.0b:natives-osx'
+    natives_windows = 'org.lwjgl:lwjgl-platform:3.0.0b:natives-windows'
 }
 
 dependencies {
     compile guava
     compile lwjgl
-    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-windows'
-    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-linux'
-    compile 'org.lwjgl:lwjgl-platform:3.0.0b:natives-osx'
+    compile natives_linux
+    compile natives_osx
+    compile natives_windows
 
     checkstyle 'org.spongepowered:checkstyle:6.1.1-sponge1'
 }
@@ -93,5 +96,5 @@ jar.manifest.mainAttributes(
 )
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+    gradleVersion = '2.12'
 }
