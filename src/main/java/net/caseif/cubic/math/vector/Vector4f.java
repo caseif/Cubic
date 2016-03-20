@@ -23,52 +23,45 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.world;
+package net.caseif.cubic.math.vector;
 
-import static org.lwjgl.opengl.GL15.glGenBuffers;
+public class Vector4f {
 
-import net.caseif.cubic.math.vector.Vector2f;
-import net.caseif.cubic.world.block.Block;
+    private final float x;
+    private final float y;
+    private final float z;
+    private final float w;
 
-import org.lwjgl.opengl.GL15;
-
-import java.nio.IntBuffer;
-
-public class Chunk {
-
-    private int vboHandle = -1;
-
-    private World world;
-    private Vector2f position;
-
-    private Block[][][] blocks = new Block[World.CHUNK_LENGTH][World.MAX_HEIGHT][World.CHUNK_LENGTH];
-
-    public Chunk(World world, Vector2f position) {
-        this.world = world;
-        this.position = position;
+    public Vector4f(float x, float y, float z, float w) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
     }
 
-    public World getWorld() {
-        return world;
+    public float getX() {
+        return x;
     }
 
-    public Vector2f getPosition() {
-        return position;
+    public float getY() {
+        return y;
     }
 
-    public Block[][][] getBlocks() {
-        return blocks;
+    public float getZ() {
+        return z;
     }
 
-    public Vector2f getMinWorldPosition() {
-        return position.multiply(World.CHUNK_LENGTH);
+    public float getW() {
+        return w;
     }
 
-    public int getVboHandle() {
-        if (vboHandle == -1) {
-            vboHandle = glGenBuffers();
-        }
-        return vboHandle;
+    public Vector4f add(float x, float y, float z, float w) {
+        return new Vector4f(this.x + x, this.y + y, this.z + z, this.w + w);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ", " + getZ() + ", " + getW() + ")";
     }
 
 }

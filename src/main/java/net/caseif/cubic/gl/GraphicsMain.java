@@ -25,7 +25,7 @@
 
 package net.caseif.cubic.gl;
 
-import static net.caseif.cubic.math.matrix.Matrix4f.orthographic;
+import static net.caseif.cubic.util.GLU.gluPerspective;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -38,26 +38,20 @@ import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
 import net.caseif.cubic.gl.render.SimpleWorldRenderer;
 import net.caseif.cubic.math.matrix.Matrix4f;
-import net.caseif.cubic.math.vector.Vector2f;
-import net.caseif.cubic.math.vector.Vector3f;
-import net.caseif.cubic.world.Chunk;
-import net.caseif.cubic.world.World;
-import net.caseif.cubic.world.block.Block;
+import net.caseif.cubic.util.GLU;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 
 public class GraphicsMain implements Runnable {
 
-    private static final int WINDOW_WIDTH = 640;
-    private static final int WINDOW_HEIGHT = 480;
+    private static final int WINDOW_WIDTH = 1000;
+    private static final int WINDOW_HEIGHT = 1000;
     public static final Camera CAMERA = new Camera();
 
     private GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
@@ -94,7 +88,7 @@ public class GraphicsMain implements Runnable {
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
         // create the window
-        window = glfwCreateWindow(640, 480, "GL Experiments", NULL, NULL);
+        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GL Experiments", NULL, NULL);
 
         // whoops
         if (window == NULL) {
@@ -118,9 +112,14 @@ public class GraphicsMain implements Runnable {
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
 
-        // show the window
-        glfwShowWindow(window);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1, -1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
         try {
             ShaderHelper.initCameraShader();
@@ -130,11 +129,20 @@ public class GraphicsMain implements Runnable {
         }
 
         glUseProgram(ShaderHelper.cameraShader);
-        float ratio = WINDOW_WIDTH / WINDOW_HEIGHT;
-        Matrix4f pr_matrix = Matrix4f.orthographic(-ratio, ratio, -1f, 1f, 50f, -50f);
+
+        float ratio = (float) WINDOW_HEIGHT / WINDOW_WIDTH;
+        final float orthoRadius = 10f;
+        Matrix4f pr_matrix = Matrix4f.orthographic(-orthoRadius, orthoRadius,
+                -orthoRadius * ratio, orthoRadius * ratio,
+                -orthoRadius, orthoRadius);
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, pr_matrix.toBuffer());
+
         glUniform1i(glGetUniformLocation(ShaderHelper.cameraShader, "tex"), 1);
+
         glUseProgram(0);
+
+        // show the window
+        glfwShowWindow(window);
     }
 
     private void deinit() {
@@ -146,7 +154,7 @@ public class GraphicsMain implements Runnable {
 
         GL.createCapabilities();
 
-        glClearColor(0f, 0f, 0f, 0f);
+        glClearColor(1f, 1f, 0f, 0f);
 
         while (glfwWindowShouldClose(window) == GL_FALSE) {
             glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -156,12 +164,11 @@ public class GraphicsMain implements Runnable {
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glRotatef((float) GLFW.glfwGetTime() * 30f, 1f, 1f, 1f);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glRotatef((float) org.lwjgl.glfw.GLFW.glfwGetTime() * 30f, 1f, 1f, 1f);
 
-            glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "vw_matrix"), false, CAMERA.getLocationBuffer());
-            glUseProgram(ShaderHelper.cameraShader);
             SimpleWorldRenderer.render(Main.world);
-            glUseProgram(0);
 
             // swap the buffers
             glfwSwapBuffers(window);

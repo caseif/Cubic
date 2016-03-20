@@ -14,7 +14,7 @@ public class ShaderHelper {
     public static int cameraShader;
 
     public static void initCameraShader() throws IOException {
-        createShaderProgram("/shader/camera.vsh", "/shader/camera.fsh");
+        createShaderProgram("/shader/camera.vert", "/shader/camera.frag");
     }
 
     private static int createShaderProgram(String vertShaderSource, String fragShaderSource) throws IOException {
