@@ -149,7 +149,8 @@ public class GraphicsMain implements Runnable {
 
         glUseProgram(ShaderHelper.cameraShader);
         Matrix4f prMatrix = MatrixHelper.perspective(znear, zfar, fov, (float) WINDOW_WIDTH / WINDOW_HEIGHT);
-        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, prMatrix.toBuffer());
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "perspectiveMatrix"), false,
+                prMatrix.toBuffer());
         glUseProgram(0);
 
         // show the window

@@ -54,7 +54,7 @@ public class BlockRenderer {
 
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
-        int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform");
+        int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "transformMatrix");
         glUniformMatrix4fv(uniformLoc, false, CAMERA.getOrthoMatrix());
         /*glBegin(GL_QUADS);
         world.getChunks().forEach(BlockRenderer::renderChunk);
@@ -80,10 +80,10 @@ public class BlockRenderer {
                     BlockType type = chunk.getBlocks()[x][y][z].getType();
                     FloatBuffer fb = FloatBuffer.allocate((4 * (3 + 4)) * 6);
                     // back face
-                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x, y, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 2);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 3);
                     // front face
                     applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 0);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 1);
@@ -95,10 +95,10 @@ public class BlockRenderer {
                     applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
                     applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 3);
                     // right face
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 0);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 2);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
                     // bottom face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
@@ -128,9 +128,6 @@ public class BlockRenderer {
         float xAdd = ordinal >= 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
         float yAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
         fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);
-
-        //fb.put
-        //fb.put(color.getX()).put(color.getY()).put(color.getZ()).put(color.getW());
     }
 
     private static void renderVbo(int handle, FloatBuffer vbo) {
@@ -142,7 +139,6 @@ public class BlockRenderer {
         glEnableVertexAttribArray(texCoordAttrIndex);
         glVertexPointer(3, GL_FLOAT, 20, 0);
         glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
-        //glColorPointer(4, GL_FLOAT, 28, 12);
         glDrawArrays(GL_QUADS, 0, vbo.capacity() / 5);
         glDisableVertexAttribArray(texCoordAttrIndex);
         glBindTexture(GL_TEXTURE_2D, 0);
