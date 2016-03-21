@@ -1,5 +1,5 @@
 /*
- * GLExperiments
+ * Cubic
  * Copyright (c) 2016, Maxim Roncace <me@caseif.net>
  *
  * The MIT License
