@@ -23,43 +23,12 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.math.vector;
+package net.caseif.cubic.util.helper;
 
-public class Vector3f {
+public class NumberHelper {
 
-    private final float x;
-    private final float y;
-    private final float z;
-
-    public Vector3f(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public Vector3f add(float x, float y, float z) {
-        return new Vector3f(this.x + x, this.y + y, this.z + z);
-    }
-
-    public Vector3f multiply(float scalar) {
-        return new Vector3f(this.x * scalar, this.y * scalar, this.z * scalar);
-    }
-
-    @Override
-    public String toString() {
-        return "(" + getX() + ", " + getY() + ", " + getZ() + ")";
+    public static double clamp(double val, double min, double max) {
+        return Math.max(min, Math.min(max, val));
     }
 
 }

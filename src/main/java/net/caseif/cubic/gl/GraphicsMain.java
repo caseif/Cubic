@@ -37,6 +37,7 @@ import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
 import net.caseif.cubic.gl.texture.Texture;
 import net.caseif.cubic.input.KeyListener;
+import net.caseif.cubic.input.MouseListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
 import net.caseif.cubic.util.helper.ImageHelper;
 import net.caseif.cubic.util.helper.MatrixHelper;
@@ -59,6 +60,7 @@ public class GraphicsMain implements Runnable {
     private GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
     private GLFWKeyCallback keyCallback = new KeyCallback();
     private KeyListener keyListener;
+    private MouseListener mouseListener;
 
     private long window;
 
@@ -91,17 +93,17 @@ public class GraphicsMain implements Runnable {
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
         // create the window
-        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GL Experiments", NULL, NULL);
+        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Cubic", NULL, NULL);
 
         // whoops
         if (window == NULL) {
             throw new RuntimeException("Could not create GLFW window");
         }
 
-        // assign the default key callback
         glfwSetKeyCallback(window, keyCallback);
-
         keyListener = new KeyListener(window);
+        mouseListener = new MouseListener(window);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         // get the video mode of the primary monitor
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -170,6 +172,7 @@ public class GraphicsMain implements Runnable {
 
         while (glfwWindowShouldClose(window) == GL_FALSE) {
             keyListener.poll();
+            mouseListener.poll();
 
             // clear the screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

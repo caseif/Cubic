@@ -54,11 +54,14 @@ public class BlockRenderer {
 
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
-        int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "transformMatrix");
-        glUniformMatrix4fv(uniformLoc, false, CAMERA.getOrthoMatrix());
-        /*glBegin(GL_QUADS);
-        world.getChunks().forEach(BlockRenderer::renderChunk);
-        glEnd();*/
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "translationMatrix"), false,
+                CAMERA.getTranslationMatrix());
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotXMatrix"), false,
+                CAMERA.getXRotation());
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotYMatrix"), false,
+                CAMERA.getYRotation());
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotZMatrix"), false,
+                CAMERA.getZRotation());
         world.getChunks().forEach(c -> renderVbo(c.getVboHandle(), createVbo(c)));
         glUseProgram(0);
     }

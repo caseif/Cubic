@@ -25,11 +25,9 @@
 
 package net.caseif.cubic.gl.render;
 
-import static net.caseif.cubic.util.helper.MatrixHelper.*;
-
-import net.caseif.cubic.math.matrix.Matrix4f;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.util.helper.MatrixHelper;
+import net.caseif.cubic.util.helper.NumberHelper;
 
 import java.nio.FloatBuffer;
 
@@ -37,58 +35,67 @@ public class Camera {
 
     public static final float MOVE_DISTANCE = 0.02f;
 
-    private Matrix4f matrix;
-
-    private Vector3f translation = new Vector3f(0f, 0f, -2f);
+    private Vector3f translation = new Vector3f(0f, 0f, 2f);
     private Vector3f rotation = new Vector3f(0f, 0f, 0f);
 
     public Camera() {
-        //matrix = Matrix4f.orthographic(-10f, 10f, -10f * (9f / 16f), 10 * (9f / 16f), -10f, 10f);
-        matrix = new Matrix4f(new float[Matrix4f.SIZE]).suppliment(MatrixHelper.IDENTITY);
-    }
-
-    public void moveForward(float units) {
-        translation = translation.add(0, 0, units);
     }
 
     public void moveBackward(float units) {
-        moveForward(-units);
+        float dx = units * (float) -Math.sin(rotation.getY());
+        float dz = units * (float) Math.cos(rotation.getY());
+        translation = translation.add(dx, 0, dz);
     }
 
-    public void moveLeft(float units) {
-        translation = translation.add(units, 0, 0);
+    public void moveForward(float units) {
+        moveBackward(-units);
     }
 
     public void moveRight(float units) {
-        moveLeft(-units);
+        float dx = units * (float) Math.cos(rotation.getY());
+        float dz = units * (float) Math.sin(rotation.getY());
+        translation = translation.add(dx, 0, dz);
     }
 
-    public void moveDown(float units) {
-        translation = translation.add(0, units, 0);
+    public void moveLeft(float units) {
+        moveRight(-units);
     }
 
     public void moveUp(float units) {
-        moveDown(-units);
+        translation = translation.add(0, units, 0);
     }
 
-    public void setPitch(float pitch) {
-        rotation = new Vector3f(pitch, rotation.getY(), rotation.getZ());
+    public void moveDown(float units) {
+        moveUp(-units);
     }
 
-    public void setYaw(float yaw) {
-        rotation = new Vector3f(rotation.getX(), yaw, rotation.getZ());
+    public void addPitch(float pitch) {
+        float newPitch = (float) NumberHelper.clamp(rotation.getX() + pitch, -Math.PI / 2, Math.PI / 2);
+        rotation = new Vector3f(newPitch, rotation.getY(), rotation.getZ());
     }
 
-    private void updateMatrix() {
-        matrix =  getTranslationMatrix(translation)
-                .multiply(getZRotationMatrix(rotation.getZ()))
-                .multiply(getYRotationMatrix(rotation.getY()))
-                .multiply(getXRotationMatrix(rotation.getX()));
+    public void addYaw(float yaw) {
+        float newYaw = (rotation.getY() + yaw) % (2 * (float) Math.PI);
+        if (newYaw < 0) {
+            newYaw += 2 * (float) Math.PI;
+        }
+        rotation = new Vector3f(rotation.getX(), newYaw, rotation.getZ());
     }
 
-    public FloatBuffer getOrthoMatrix() {
-        updateMatrix();
-        return matrix.toBuffer();
+    public FloatBuffer getTranslationMatrix() {
+        return MatrixHelper.getTranslationMatrix(translation.multiply(-1)).toBuffer();
+    }
+
+    public FloatBuffer getXRotation() {
+        return MatrixHelper.getXRotationMatrix(rotation.getX()).toBuffer();
+    }
+
+    public FloatBuffer getYRotation() {
+        return MatrixHelper.getYRotationMatrix(rotation.getY()).toBuffer();
+    }
+
+    public FloatBuffer getZRotation() {
+        return MatrixHelper.getZRotationMatrix(rotation.getZ()).toBuffer();
     }
 
 }
