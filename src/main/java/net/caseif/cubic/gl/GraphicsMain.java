@@ -85,12 +85,12 @@ public class GraphicsMain implements Runnable {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-        // reset the window hints
-        glfwDefaultWindowHints();
-        // make it unresizble
-        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-        // hide it until we're done initializing it
-        glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+        glfwDefaultWindowHints(); // reset the window hints
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // make it unresizble
+        glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // hide it until we're done initializing it
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // using OpenGL 3.3
+        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // use core 3.3 profile
 
         // create the window
         window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Cubic", NULL, NULL);
@@ -122,15 +122,6 @@ public class GraphicsMain implements Runnable {
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_POINTER);
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        //glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1, -1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
 
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -146,8 +137,6 @@ public class GraphicsMain implements Runnable {
         float fov = 15f;
         float znear = 1f;
         float zfar = 10f;
-
-        applyFrustum(znear, zfar, fov);
 
         glUseProgram(ShaderHelper.cameraShader);
         Matrix4f prMatrix = MatrixHelper.perspective(znear, zfar, fov, (float) WINDOW_WIDTH / WINDOW_HEIGHT);
@@ -177,12 +166,6 @@ public class GraphicsMain implements Runnable {
             // clear the screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glRotatef((float) org.lwjgl.glfw.GLFW.glfwGetTime() * 30f, 1f, 1f, 1f);
-
             BlockRenderer.render(Main.world);
 
             // swap the buffers
@@ -191,12 +174,6 @@ public class GraphicsMain implements Runnable {
             // poll for events (like key events)
             glfwPollEvents();
         }
-    }
-
-    private void applyFrustum(float znear, float zfar, float fov) {
-        double ymax = znear * Math.tan(fov * Math.PI / 360f);
-        double xmax = ymax * (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT;
-        glFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
     }
 
     private void applyTextures() {

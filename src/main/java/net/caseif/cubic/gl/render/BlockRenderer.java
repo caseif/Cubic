@@ -50,6 +50,7 @@ public class BlockRenderer {
 
     private static final float BLOCK_LENGTH = 0.5f;
 
+    private static final int positionAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_position");
     private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
 
     public static void render(World world) {
@@ -70,7 +71,7 @@ public class BlockRenderer {
         final Vector4f red = new Vector4f(1f, 0f, 0f, 1f);
         final Vector4f green = new Vector4f(0f, 1f, 0f, 1f);
         final Vector4f blue = new Vector4f(0f, 0f, 1f, 1f);
-        
+
         List<Float> buffer = new ArrayList<>();
         int chunkLen = chunk.getBlocks().length;
         int chunkHeight = chunk.getBlocks()[0].length;
@@ -124,7 +125,7 @@ public class BlockRenderer {
         fb.flip();
         return fb;
     }
-    
+
     private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, int ordinal) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
         Vector2f texCoords = Texture.getTexture(type).getAtlasCoords();
@@ -134,18 +135,23 @@ public class BlockRenderer {
     }
 
     private static void renderVbo(int handle, FloatBuffer vbo) {
-        glBindBuffer(GL_ARRAY_BUFFER, globalHandle);
+        glBindBuffer(GL_ARRAY_BUFFER, handle);
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
-        glPushMatrix();
         glBindTexture(GL_TEXTURE_2D, Texture.atlasHandle);
+
+        glEnableVertexAttribArray(positionAttrIndex);
         glEnableVertexAttribArray(texCoordAttrIndex);
-        glVertexPointer(3, GL_FLOAT, 20, 0);
+        glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, false, 20, 0);
         glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
+
         glDrawArrays(GL_QUADS, 0, vbo.capacity() / 5);
+        //System.out.println("GL_INVALID_OPERATION: " + (glGetError() == GL_INVALID_OPERATION));
+
+        glDisableVertexAttribArray(positionAttrIndex);
         glDisableVertexAttribArray(texCoordAttrIndex);
+
         glBindTexture(GL_TEXTURE_2D, 0);
-        glPopMatrix();
     }
 
 }
