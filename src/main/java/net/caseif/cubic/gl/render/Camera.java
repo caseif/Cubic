@@ -25,11 +25,11 @@
 
 package net.caseif.cubic.gl.render;
 
-import static net.caseif.cubic.util.MatrixHelper.*;
+import static net.caseif.cubic.util.helper.MatrixHelper.*;
 
 import net.caseif.cubic.math.matrix.Matrix4f;
 import net.caseif.cubic.math.vector.Vector3f;
-import net.caseif.cubic.util.MatrixHelper;
+import net.caseif.cubic.util.helper.MatrixHelper;
 
 import java.nio.FloatBuffer;
 

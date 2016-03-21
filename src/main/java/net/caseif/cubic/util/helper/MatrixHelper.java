@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.util;
+package net.caseif.cubic.util.helper;
 
 import static net.caseif.cubic.math.matrix.Matrix4f.SIZE;
 

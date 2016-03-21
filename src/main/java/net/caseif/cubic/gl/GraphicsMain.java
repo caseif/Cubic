@@ -25,47 +25,9 @@
 
 package net.caseif.cubic.gl;
 
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_LEQUAL;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glDepthFunc;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnableClientState;
-import static org.lwjgl.opengl.GL11.glFrustum;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import net.caseif.cubic.Main;
@@ -73,15 +35,20 @@ import net.caseif.cubic.gl.callback.KeyCallback;
 import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
 import net.caseif.cubic.gl.render.SimpleWorldRenderer;
+import net.caseif.cubic.gl.texture.Texture;
 import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
-import net.caseif.cubic.util.MatrixHelper;
+import net.caseif.cubic.util.helper.ImageHelper;
+import net.caseif.cubic.util.helper.MatrixHelper;
+import net.caseif.cubic.world.block.BlockType;
+
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class GraphicsMain implements Runnable {
 
@@ -150,8 +117,10 @@ public class GraphicsMain implements Runnable {
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        glEnable(GL_TEXTURE_2D);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_POINTER);
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -160,6 +129,8 @@ public class GraphicsMain implements Runnable {
         glLoadIdentity();
 
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        applyTextures();
 
         try {
             ShaderHelper.initCameraShader();
@@ -192,6 +163,8 @@ public class GraphicsMain implements Runnable {
 
         GL.createCapabilities();
 
+        glClearColor(1f, 1f, 0f, 1f);
+
         while (glfwWindowShouldClose(window) == GL_FALSE) {
             keyListener.poll();
 
@@ -218,6 +191,11 @@ public class GraphicsMain implements Runnable {
         double ymax = znear * Math.tan(fov * Math.PI / 360f);
         double xmax = ymax * (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT;
         glFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
+    }
+
+    private void applyTextures() {
+        Arrays.stream(BlockType.values()).forEach(Texture::registerTexture);
+        ImageHelper.createAtlas();
     }
 
 }

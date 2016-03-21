@@ -30,12 +30,14 @@ import net.caseif.cubic.world.Chunk;
 
 public class Block {
 
-    private Chunk owningChunk;
-    private Vector3f position;
+    private final Chunk owningChunk;
+    private final Vector3f position;
+    private final BlockType type;
 
-    public Block(Chunk owningChunk, Vector3f position) {
+    public Block(Chunk owningChunk, Vector3f position, BlockType type) {
         this.position = position;
         this.owningChunk = owningChunk;
+        this.type = type;
     }
 
     public Chunk getOwningChunk() {
@@ -44,6 +46,10 @@ public class Block {
 
     public Vector3f getPosition() {
         return position;
+    }
+
+    public BlockType getType() {
+        return type;
     }
 
 }

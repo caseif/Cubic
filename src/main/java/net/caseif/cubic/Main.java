@@ -31,6 +31,7 @@ import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
 import net.caseif.cubic.world.block.Block;
+import net.caseif.cubic.world.block.BlockType;
 
 public class Main {
 
@@ -50,7 +51,7 @@ public class Main {
         world = new World("world");
         Chunk chunk = new Chunk(world, new Vector2f(0, 0));
         world.addChunk(chunk);
-        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3f(0, 0, 0));
+        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3f(0, 0, 0), BlockType.STONE);
     }
 
 }

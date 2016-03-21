@@ -25,30 +25,23 @@
 
 package net.caseif.cubic.gl.render;
 
-import static javafx.scene.input.KeyCode.F;
-import static javafx.scene.input.KeyCode.V;
 import static net.caseif.cubic.gl.GraphicsMain.CAMERA;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
+import net.caseif.cubic.gl.texture.Texture;
+import net.caseif.cubic.math.vector.Vector2f;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.math.vector.Vector4f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
-import net.caseif.cubic.world.block.Block;
+import net.caseif.cubic.world.block.BlockType;
 
-import com.google.common.collect.Lists;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL15;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SimpleWorldRenderer {
@@ -56,6 +49,8 @@ public class SimpleWorldRenderer {
     private static final int globalHandle = glGenBuffers();
 
     private static final float UNITS_PER_BLOCK = 0.5f;
+
+    private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
 
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
@@ -66,63 +61,6 @@ public class SimpleWorldRenderer {
         glEnd();*/
         world.getChunks().forEach(c -> renderVbo(c.getVboHandle(), createVbo(c)));
         glUseProgram(0);
-    }
-
-    private static void renderChunk(Chunk chunk) {
-        int chunkLen = chunk.getBlocks().length;
-        int chunkHeight = chunk.getBlocks()[0].length;
-        for (int x = 0; x < chunkLen; x++) {
-            for (int z = 0; z < chunkLen; z++) {
-                for (int y = 0; y < chunkHeight; y++) {
-                    renderBlock(chunk.getBlocks()[x][y][z]);
-                }
-            }
-        }
-    }
-
-    private static void renderBlock(Block block) {
-        if (block == null) {
-            return;
-        }
-
-        Vector3f pos = block.getPosition();
-
-        // back face
-        glColor3f(0f, 1f, 0f);
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ());
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ());
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ());
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ());
-        // front face
-        glColor3f(0f, 1f, 0f);
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        // left face
-        glColor3f(1f, 0f, 0f);
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ());
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ());
-        // right face
-        glColor3f(1f, 0f, 0f);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ());
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ());
-        // top face
-        glColor3f(0f, 0f, 1f);
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ());
-        glVertex3f(pos.getX(), pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY(), pos.getZ());
-        // bottom face
-        glColor3f(0f, 0f, 1f);
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ());
-        glVertex3f(pos.getX(), pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ() + UNITS_PER_BLOCK);
-        glVertex3f(pos.getX() + UNITS_PER_BLOCK, pos.getY() + UNITS_PER_BLOCK, pos.getZ());
     }
 
     private static FloatBuffer createVbo(Chunk chunk) {
@@ -139,37 +77,38 @@ public class SimpleWorldRenderer {
                     if (chunk.getBlocks()[x][y][z] == null) {
                         continue;
                     }
+                    BlockType type = chunk.getBlocks()[x][y][z].getType();
                     FloatBuffer fb = FloatBuffer.allocate((4 * (3 + 4)) * 6);
                     // back face
-                    applyVertex(fb, new Vector3f(x, y, z), red);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), red);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), red);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), red);
+                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 2);
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 3);
                     // front face
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), red);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), red);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), red);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), red);
+                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 0);
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 1);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 3);
                     // left face
-                    applyVertex(fb, new Vector3f(x, y, z), green);
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), green);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), green);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), green);
+                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
+                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 3);
                     // right face
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), green);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), green);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), green);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), green);
-                    // top face
-                    applyVertex(fb, new Vector3f(x, y, z), blue);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), blue);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), blue);
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), blue);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 3);
                     // bottom face
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), blue);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), blue);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), blue);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), blue);
+                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 1);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 2);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 3);
+                    // top face
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 0);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
+                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 3);
 
                     for (float f : fb.array()) {
                         buffer.add(f);
@@ -183,8 +122,14 @@ public class SimpleWorldRenderer {
         return fb;
     }
     
-    private static void applyVertex(FloatBuffer fb, Vector3f location, Vector4f color) {
-        fb.put(location.getX()).put(location.getY()).put(location.getZ()).put(1.0f);
+    private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, int ordinal) {
+        fb.put(location.getX()).put(location.getY()).put(location.getZ());
+        Vector2f texCoords = Texture.getTexture(type).getAtlasCoords();
+        float xAdd = ordinal >= 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
+        float yAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
+        fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);
+
+        //fb.put
         //fb.put(color.getX()).put(color.getY()).put(color.getZ()).put(color.getW());
     }
 
@@ -193,9 +138,14 @@ public class SimpleWorldRenderer {
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
         glPushMatrix();
-        glVertexPointer(4, GL_FLOAT, 16, 0);
+        glBindTexture(GL_TEXTURE_2D, Texture.atlasHandle);
+        glEnableVertexAttribArray(texCoordAttrIndex);
+        glVertexPointer(3, GL_FLOAT, 20, 0);
+        glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
         //glColorPointer(4, GL_FLOAT, 28, 12);
-        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 4);
+        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 5);
+        glDisableVertexAttribArray(texCoordAttrIndex);
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
     }
 
