@@ -2,8 +2,10 @@
 
 in vec4 position;
 
-uniform mat4 orthoTransform;
+uniform mat4 pr_matrix; // perspective matrix (constant)
+
+uniform mat4 orthoTransform; // orthographic matrix (varies with camera state)
 
 void main() {
-    gl_Position = position * orthoTransform;
+    gl_Position = pr_matrix * orthoTransform * position;
 }

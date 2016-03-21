@@ -37,9 +37,12 @@ import net.caseif.cubic.gl.callback.KeyCallback;
 import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
 import net.caseif.cubic.gl.render.SimpleWorldRenderer;
+import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
 import net.caseif.cubic.util.GLU;
+import net.caseif.cubic.util.MatrixHelper;
 
+import com.sun.prism.ps.Shader;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -50,12 +53,13 @@ import java.io.IOException;
 
 public class GraphicsMain implements Runnable {
 
-    private static final int WINDOW_WIDTH = 1000;
-    private static final int WINDOW_HEIGHT = 1000;
+    private static final int WINDOW_WIDTH = 800;
+    private static final int WINDOW_HEIGHT = 800;
     public static final Camera CAMERA = new Camera();
 
     private GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
     private GLFWKeyCallback keyCallback = new KeyCallback();
+    private KeyListener keyListener;
 
     private long window;
 
@@ -98,6 +102,8 @@ public class GraphicsMain implements Runnable {
         // assign the default key callback
         glfwSetKeyCallback(window, keyCallback);
 
+        keyListener = new KeyListener(window);
+
         // get the video mode of the primary monitor
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -117,9 +123,11 @@ public class GraphicsMain implements Runnable {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1, -1);
+        //glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+
+        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         try {
             ShaderHelper.initCameraShader();
@@ -127,6 +135,17 @@ public class GraphicsMain implements Runnable {
             System.err.println("Failed to initialize shaders!");
             ex.printStackTrace();
         }
+
+        float fov = 15f;
+        float znear = 1f;
+        float zfar = 10f;
+
+        applyFrustum(znear, zfar, fov);
+
+        glUseProgram(ShaderHelper.cameraShader);
+        Matrix4f pr_matrix = MatrixHelper.perspective(znear, zfar, fov, (float) WINDOW_WIDTH / WINDOW_HEIGHT);
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, pr_matrix.toBuffer());
+        glUseProgram(0);
 
         // show the window
         glfwShowWindow(window);
@@ -141,10 +160,8 @@ public class GraphicsMain implements Runnable {
 
         GL.createCapabilities();
 
-        glClearColor(1f, 1f, 0f, 0f);
-
         while (glfwWindowShouldClose(window) == GL_FALSE) {
-            glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+            keyListener.poll();
 
             // clear the screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -163,6 +180,12 @@ public class GraphicsMain implements Runnable {
             // poll for events (like key events)
             glfwPollEvents();
         }
+    }
+
+    private void applyFrustum(float znear, float zfar, float fov) {
+        double ymax = znear * Math.tan(fov * Math.PI / 360f);
+        double xmax = ymax * (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT;
+        glFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
     }
 
 }

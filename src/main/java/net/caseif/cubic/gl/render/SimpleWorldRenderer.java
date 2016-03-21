@@ -60,7 +60,7 @@ public class SimpleWorldRenderer {
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
         int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform");
-        glUniformMatrix4fv(uniformLoc, false, CAMERA.getLocationBuffer());
+        glUniformMatrix4fv(uniformLoc, false, CAMERA.getOrthoMatrix());
         /*glBegin(GL_QUADS);
         world.getChunks().forEach(SimpleWorldRenderer::renderChunk);
         glEnd();*/
@@ -184,7 +184,7 @@ public class SimpleWorldRenderer {
     }
     
     private static void applyVertex(FloatBuffer fb, Vector3f location, Vector4f color) {
-        fb.put(location.getX()).put(location.getY()).put(location.getZ());
+        fb.put(location.getX()).put(location.getY()).put(location.getZ()).put(1.0f);
         //fb.put(color.getX()).put(color.getY()).put(color.getZ()).put(color.getW());
     }
 
@@ -193,9 +193,9 @@ public class SimpleWorldRenderer {
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
         glPushMatrix();
-        glVertexPointer(3, GL_FLOAT, 12, 0);
+        glVertexPointer(4, GL_FLOAT, 16, 0);
         //glColorPointer(4, GL_FLOAT, 28, 12);
-        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 3);
+        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 4);
         glPopMatrix();
     }
 
