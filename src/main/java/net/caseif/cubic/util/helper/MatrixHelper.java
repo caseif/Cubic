@@ -40,16 +40,15 @@ public class MatrixHelper {
             0, 0, 0, 1
     });
 
-    public static Matrix4f perspective(float near, float far,
-                                       float FoV, float aspect){
-        float y2 = near * (float)Math.tan(Math.toRadians(FoV));
+    public static Matrix4f perspective(float near, float far, float fov, float aspect) {
+        float y2 = near * (float)Math.tan(Math.toRadians(fov));
         float y1 = -y2;
         float x1 = y1 * aspect;
         float x2 = y2 * aspect;
         return frustum(x1, x2, y1, y2, near, far);
     }
 
-    public static Matrix4f frustum(float left, float right, float bottom, float top, float near, float far){
+    public static Matrix4f frustum(float left, float right, float bottom, float top, float near, float far) {
         float[] elements = new float[SIZE];
 
         elements[0 + 0 * 4] =  (2 * near) / (right - left);
@@ -66,7 +65,7 @@ public class MatrixHelper {
         return new Matrix4f(elements);
     }
 
-    public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far){
+    public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far) {
         float[] elements = new float[SIZE];
 
         elements[0 + 0 * 4] = 2.0f / (right - left);

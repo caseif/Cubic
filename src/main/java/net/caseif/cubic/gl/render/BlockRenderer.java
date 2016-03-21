@@ -44,11 +44,11 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWorldRenderer {
+public class BlockRenderer {
 
     private static final int globalHandle = glGenBuffers();
 
-    private static final float UNITS_PER_BLOCK = 0.5f;
+    private static final float BLOCK_LENGTH = 0.5f;
 
     private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
 
@@ -57,7 +57,7 @@ public class SimpleWorldRenderer {
         int uniformLoc = glGetUniformLocation(ShaderHelper.cameraShader, "orthoTransform");
         glUniformMatrix4fv(uniformLoc, false, CAMERA.getOrthoMatrix());
         /*glBegin(GL_QUADS);
-        world.getChunks().forEach(SimpleWorldRenderer::renderChunk);
+        world.getChunks().forEach(BlockRenderer::renderChunk);
         glEnd();*/
         world.getChunks().forEach(c -> renderVbo(c.getVboHandle(), createVbo(c)));
         glUseProgram(0);
@@ -81,34 +81,34 @@ public class SimpleWorldRenderer {
                     FloatBuffer fb = FloatBuffer.allocate((4 * (3 + 4)) * 6);
                     // back face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 2);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 3);
                     // front face
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 1);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 3);
+                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 0);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 3);
                     // left face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 1);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 3);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
+                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 3);
                     // right face
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 0);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 3);
                     // bottom face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y, z + UNITS_PER_BLOCK), type, 1);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z + UNITS_PER_BLOCK), type, 2);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y, z), type, 3);
+                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 2);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 3);
                     // top face
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + UNITS_PER_BLOCK, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + UNITS_PER_BLOCK, z + UNITS_PER_BLOCK), type, 3);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 0);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
 
                     for (float f : fb.array()) {
                         buffer.add(f);

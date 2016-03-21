@@ -9,4 +9,5 @@
 
     <!-- specific suppressions -->
     <suppress checks="Indentation" files="package-info\.java"/>
+    <suppress checks=".*" files="PNGDecoder\.java"/>
 </suppressions>

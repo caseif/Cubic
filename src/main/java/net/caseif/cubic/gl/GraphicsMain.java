@@ -32,9 +32,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import net.caseif.cubic.Main;
 import net.caseif.cubic.gl.callback.KeyCallback;
+import net.caseif.cubic.gl.render.BlockRenderer;
 import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
-import net.caseif.cubic.gl.render.SimpleWorldRenderer;
 import net.caseif.cubic.gl.texture.Texture;
 import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
@@ -146,8 +146,8 @@ public class GraphicsMain implements Runnable {
         applyFrustum(znear, zfar, fov);
 
         glUseProgram(ShaderHelper.cameraShader);
-        Matrix4f pr_matrix = MatrixHelper.perspective(znear, zfar, fov, (float) WINDOW_WIDTH / WINDOW_HEIGHT);
-        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, pr_matrix.toBuffer());
+        Matrix4f prMatrix = MatrixHelper.perspective(znear, zfar, fov, (float) WINDOW_WIDTH / WINDOW_HEIGHT);
+        glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "pr_matrix"), false, prMatrix.toBuffer());
         glUseProgram(0);
 
         // show the window
@@ -177,7 +177,7 @@ public class GraphicsMain implements Runnable {
             glLoadIdentity();
             glRotatef((float) org.lwjgl.glfw.GLFW.glfwGetTime() * 30f, 1f, 1f, 1f);
 
-            SimpleWorldRenderer.render(Main.world);
+            BlockRenderer.render(Main.world);
 
             // swap the buffers
             glfwSwapBuffers(window);
