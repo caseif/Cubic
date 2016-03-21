@@ -118,6 +118,8 @@ public class GraphicsMain implements Runnable {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glEnable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_POINTER);

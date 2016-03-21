@@ -81,19 +81,19 @@ public class BlockRenderer {
                     FloatBuffer fb = FloatBuffer.allocate((4 * (3 + 4)) * 6);
                     // back face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 1);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 3);
                     // front face
                     applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 1);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 3);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
                     // left face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 1);
                     applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 3);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 3);
                     // right face
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 0);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 1);
@@ -101,14 +101,14 @@ public class BlockRenderer {
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 3);
                     // bottom face
                     applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 1);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 3);
+                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 3);
                     // top face
                     applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 1);
+                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 1);
                     applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
+                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 3);
 
                     for (float f : fb.array()) {
                         buffer.add(f);
