@@ -51,8 +51,8 @@ public class Main {
         world = new World("world");
         Chunk chunk = new Chunk(world, new Vector2i(0, 0));
         world.addChunk(chunk);
-        chunk.addBlock(new Block(chunk, new Vector3i(1, 0, 0), BlockType.STONE));
-        chunk.addBlock(new Block(chunk, new Vector3i(0, 0, 0), BlockType.STONE));
+        chunk.addBlock(new Block(chunk, new Vector3i(0, 0, 0), BlockType.GRASS));
+        //chunk.addBlock(new Block(chunk, new Vector3i(1, 0, 0), BlockType.STONE));
     }
 
 }

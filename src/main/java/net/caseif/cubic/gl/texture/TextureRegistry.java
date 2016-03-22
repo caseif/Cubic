@@ -66,20 +66,7 @@ public class TextureRegistry {
         createTexture(type, null);
     }
 
-    public void registerTextures() {
-        checkState(!areTexturesRegistered, "Cannot register textures more than once");
-
-        createTexture(BlockType.STONE);
-
-        createAtlas();
-
-        this.areTexturesRegistered = true;
-    }
-
-    public void createAtlas() {
-        //TODO: Rewrite to use something other than BufferedImage
-        //int finalSize = NumUtil.nextPowerOfTwo((int)Math.sqrt(GraphicsUtil.textures.size() *
-        //        Math.pow(Block.length, 2)));
+    private void createAtlas() {
         int width = textures.size() * Texture.SIZE;
         int height = Texture.SIZE;
         BufferedImage atlas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -90,6 +77,7 @@ public class TextureRegistry {
             int x = i * Texture.SIZE;
             g.drawImage(textures.get(key).getImage(), x, y, null);
             textures.get(key).setAtlasCoords(new Vector2f((float) x / width, (float) y / height));
+            i++;
         }
         Texture.atlasSize = width;
 
@@ -127,6 +115,19 @@ public class TextureRegistry {
         }
 
         return -1;
+    }
+
+    public void registerTextures() {
+        checkState(!areTexturesRegistered, "Cannot register textures more than once");
+
+        createTexture(BlockType.STONE);
+        createTexture(BlockType.GRASS);
+        createTexture(BlockType.GRASS, BlockFace.TOP);
+        createTexture(BlockType.GRASS, BlockFace.BOTTOM);
+
+        createAtlas();
+
+        this.areTexturesRegistered = true;
     }
 
 }

@@ -186,8 +186,8 @@ public class BlockRenderer {
     private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, BlockFace face, int ordinal) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
         Vector2f texCoords = TEXTURE_REGISTRY.getTexture(type, face).getAtlasCoords();
-        float xAdd = ordinal >= 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
-        float yAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
+        float xAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
+        float yAdd = ordinal >= 2 ? 0 : 1; // dunno why this needs to be flipped, but it works
         fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);
     }
 
