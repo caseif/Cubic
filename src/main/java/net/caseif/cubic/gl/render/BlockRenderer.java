@@ -26,6 +26,7 @@
 package net.caseif.cubic.gl.render;
 
 import static net.caseif.cubic.gl.GraphicsMain.CAMERA;
+import static net.caseif.cubic.gl.GraphicsMain.TEXTURE_REGISTRY;
 import static net.caseif.cubic.world.World.CHUNK_LENGTH;
 import static net.caseif.cubic.world.World.MAX_HEIGHT;
 import static org.lwjgl.opengl.GL11.*;
@@ -104,7 +105,7 @@ public class BlockRenderer {
                     float rZ = z * BLOCK_LENGTH;
                     // back face
                     if (!block.get().getRelative(BlockFace.BACK).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.BACK,
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
                                 new Vector3f(rX, rY, rZ),
                                 new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
@@ -112,7 +113,7 @@ public class BlockRenderer {
                     }
                     // front face
                     if (!block.get().getRelative(BlockFace.FRONT).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.FRONT,
                                 new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
                                 new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
@@ -120,7 +121,7 @@ public class BlockRenderer {
                     }
                     // left face
                     if (!block.get().getRelative(BlockFace.LEFT).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.LEFT,
                                 new Vector3f(rX, rY, rZ),
                                 new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
                                 new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
@@ -128,7 +129,7 @@ public class BlockRenderer {
                     }
                     // right face
                     if (!block.get().getRelative(BlockFace.RIGHT).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.RIGHT,
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
                                 new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ),
@@ -136,7 +137,7 @@ public class BlockRenderer {
                     }
                     // bottom face
                     if (!block.get().getRelative(BlockFace.BOTTOM).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.BOTTOM,
                                 new Vector3f(rX, rY, rZ),
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
                                 new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
@@ -144,7 +145,7 @@ public class BlockRenderer {
                     }
                     // top face
                     if (!block.get().getRelative(BlockFace.TOP).isPresent()) {
-                        faces.add(createQuad(type,
+                        faces.add(createQuad(type, BlockFace.TOP,
                                 new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
                                 new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
                                 new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
@@ -170,20 +171,21 @@ public class BlockRenderer {
         return fb;
     }
 
-    private static FloatBuffer createQuad(BlockType type, Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3) {
+    private static FloatBuffer createQuad(BlockType type, BlockFace face, Vector3f c0, Vector3f c1, Vector3f c2,
+            Vector3f c3) {
         FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 2)));
-        applyVertex(fb, c0, type, 0);
-        applyVertex(fb, c1, type, 1);
-        applyVertex(fb, c2, type, 2);
-        applyVertex(fb, c0, type, 0);
-        applyVertex(fb, c2, type, 2);
-        applyVertex(fb, c3, type, 3);
+        applyVertex(fb, c0, type, face, 0);
+        applyVertex(fb, c1, type, face, 1);
+        applyVertex(fb, c2, type, face, 2);
+        applyVertex(fb, c0, type, face, 0);
+        applyVertex(fb, c2, type, face, 2);
+        applyVertex(fb, c3, type, face, 3);
         return fb;
     }
 
-    private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, int ordinal) {
+    private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, BlockFace face, int ordinal) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
-        Vector2f texCoords = Texture.getTexture(type).getAtlasCoords();
+        Vector2f texCoords = TEXTURE_REGISTRY.getTexture(type, face).getAtlasCoords();
         float xAdd = ordinal >= 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
         float yAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
         fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);

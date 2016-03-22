@@ -35,14 +35,12 @@ import net.caseif.cubic.gl.callback.KeyCallback;
 import net.caseif.cubic.gl.render.BlockRenderer;
 import net.caseif.cubic.gl.render.Camera;
 import net.caseif.cubic.gl.render.ShaderHelper;
-import net.caseif.cubic.gl.texture.Texture;
+import net.caseif.cubic.gl.texture.TextureRegistry;
 import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.input.MouseListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
 import net.caseif.cubic.util.helper.DeltaHelper;
-import net.caseif.cubic.util.helper.ImageHelper;
 import net.caseif.cubic.util.helper.math.MatrixHelper;
-import net.caseif.cubic.world.block.BlockType;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -50,13 +48,14 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class GraphicsMain implements Runnable {
 
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 600;
     public static final Camera CAMERA = new Camera();
+
+    public static final TextureRegistry TEXTURE_REGISTRY = new TextureRegistry();
 
     private GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
     private GLFWKeyCallback keyCallback = new KeyCallback();
@@ -119,7 +118,7 @@ public class GraphicsMain implements Runnable {
 
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        applyTextures();
+        TEXTURE_REGISTRY.registerTextures();
 
         try {
             ShaderHelper.initCameraShader();
@@ -168,11 +167,6 @@ public class GraphicsMain implements Runnable {
             // poll for events (like key events)
             glfwPollEvents();
         }
-    }
-
-    private void applyTextures() {
-        Arrays.stream(BlockType.values()).forEach(Texture::registerTexture);
-        ImageHelper.createAtlas();
     }
 
 }
