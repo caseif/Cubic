@@ -25,10 +25,16 @@
 
 package net.caseif.cubic.world;
 
+import static net.caseif.cubic.world.World.CHUNK_LENGTH;
+import static net.caseif.cubic.world.World.MAX_HEIGHT;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 
-import net.caseif.cubic.math.vector.Vector2f;
+import net.caseif.cubic.math.vector.Vector2i;
 import net.caseif.cubic.world.block.Block;
+
+import com.google.common.base.Preconditions;
+
+import java.util.Optional;
 
 public class Chunk {
 
@@ -36,11 +42,11 @@ public class Chunk {
     private boolean dirty = true;
 
     private World world;
-    private Vector2f position;
+    private Vector2i position;
 
-    private Block[][][] blocks = new Block[World.CHUNK_LENGTH][World.MAX_HEIGHT][World.CHUNK_LENGTH];
+    private Block[][][] blocks = new Block[CHUNK_LENGTH][World.MAX_HEIGHT][CHUNK_LENGTH];
 
-    public Chunk(World world, Vector2f position) {
+    public Chunk(World world, Vector2i position) {
         this.world = world;
         this.position = position;
     }
@@ -49,7 +55,7 @@ public class Chunk {
         return world;
     }
 
-    public Vector2f getPosition() {
+    public Vector2i getPosition() {
         return position;
     }
 
@@ -57,8 +63,16 @@ public class Chunk {
         return blocks;
     }
 
-    public Vector2f getMinWorldPosition() {
-        return position.multiply(World.CHUNK_LENGTH);
+    public Optional<Block> getBlock(int x, int y, int z) {
+        Preconditions.checkArgument(x >= 0 && x < CHUNK_LENGTH
+                && z >= 0 && z < CHUNK_LENGTH
+                && y >= 0 && y < MAX_HEIGHT,
+                "Invalid coordinates (" + x + ", " + y + ", " + z + ") passed to Chunk#getBlock");
+        return Optional.ofNullable(blocks[x][y][z]);
+    }
+
+    public Vector2i getMinWorldPosition() {
+        return position.multiply(CHUNK_LENGTH);
     }
 
     public boolean isDirty() {

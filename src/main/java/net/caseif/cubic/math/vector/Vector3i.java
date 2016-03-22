@@ -23,36 +23,43 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic;
+package net.caseif.cubic.math.vector;
 
-import net.caseif.cubic.gl.GraphicsMain;
-import net.caseif.cubic.math.vector.Vector2i;
-import net.caseif.cubic.math.vector.Vector3i;
-import net.caseif.cubic.world.Chunk;
-import net.caseif.cubic.world.World;
-import net.caseif.cubic.world.block.Block;
-import net.caseif.cubic.world.block.BlockType;
+public class Vector3i {
 
-public class Main {
+    private final int x;
+    private final int y;
+    private final int z;
 
-    public static World world;
-
-    public static void main(String[] args) {
-        createDummyWorld();
-        initGraphicsThread();
+    public Vector3i(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    private static void initGraphicsThread() {
-        Thread t = new Thread(new GraphicsMain());
-        t.start();
+    public int getX() {
+        return x;
     }
 
-    private static void createDummyWorld() {
-        world = new World("world");
-        Chunk chunk = new Chunk(world, new Vector2i(0, 0));
-        world.addChunk(chunk);
-        chunk.getBlocks()[1][0][0] = new Block(chunk, new Vector3i(1, 0, 0), BlockType.STONE);
-        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3i(0, 0, 0), BlockType.STONE);
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public Vector3i add(int x, int y, int z) {
+        return new Vector3i(this.x + x, this.y + y, this.z + z);
+    }
+
+    public Vector3i multiply(int scalar) {
+        return new Vector3i(this.x * scalar, this.y * scalar, this.z * scalar);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getX() + ", " + getY() + ", " + getZ() + ")";
     }
 
 }

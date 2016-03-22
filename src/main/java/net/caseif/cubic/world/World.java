@@ -27,19 +27,21 @@ package net.caseif.cubic.world;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import net.caseif.cubic.math.vector.Vector2f;
+import net.caseif.cubic.math.vector.Vector2i;
+import net.caseif.cubic.world.block.Block;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class World {
 
-    static final int MAX_HEIGHT = 128;
-    static final int CHUNK_LENGTH = 16;
+    public static final int MAX_HEIGHT = 128;
+    public static final int CHUNK_LENGTH = 16;
 
     private String name;
-    private Map<Vector2f, Chunk> chunkMap = new HashMap<>();
+    private Map<Vector2i, Chunk> chunkMap = new HashMap<>();
 
     public World(String name) {
         this.name = name;
@@ -49,16 +51,12 @@ public class World {
         return name;
     }
 
-    public Map<Vector2f, Chunk> getChunkMap() {
-        return chunkMap;
-    }
-
     public Collection<Chunk> getChunks() {
-        return getChunkMap().values();
+        return chunkMap.values();
     }
 
-    public Chunk getChunk(Vector2f location) {
-        return getChunkMap().get(location);
+    public Optional<Chunk> getChunk(Vector2i location) {
+        return Optional.ofNullable(chunkMap.get(location));
     }
 
     public void addChunk(Chunk chunk) {
@@ -67,8 +65,15 @@ public class World {
         chunkMap.put(chunk.getPosition(), chunk);
     }
 
-    public void removeChunk(Vector2f position) {
+    public void removeChunk(Vector2i position) {
         chunkMap.remove(position);
+    }
+
+    public Optional<Block> getBlock(int x, int y, int z) {
+        int chunkX = x / CHUNK_LENGTH;
+        int chunkZ = z / CHUNK_LENGTH;
+        Optional<Chunk> c = getChunk(new Vector2i(chunkX, chunkZ));
+        return c.isPresent() ? c.get().getBlock(x % CHUNK_LENGTH, y % MAX_HEIGHT, z % CHUNK_LENGTH) : Optional.empty();
     }
 
 }

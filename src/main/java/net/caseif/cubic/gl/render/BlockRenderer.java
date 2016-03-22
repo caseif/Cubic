@@ -36,6 +36,8 @@ import net.caseif.cubic.math.vector.Vector2f;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
+import net.caseif.cubic.world.block.Block;
+import net.caseif.cubic.world.block.BlockFace;
 import net.caseif.cubic.world.block.BlockType;
 
 import org.lwjgl.BufferUtils;
@@ -93,48 +95,68 @@ public class BlockRenderer {
                     if (chunk.getBlocks()[x][y][z] == null) {
                         continue;
                     }
-                    BlockType type = chunk.getBlocks()[x][y][z].getType();
-                    FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 4)) * 6);
+                    Block block = chunk.getBlocks()[x][y][z];
+                    BlockType type = block.getType();
+                    List<FloatBuffer> faces = new ArrayList<>();
+                    float rX = x * BLOCK_LENGTH;
+                    float rY = y * BLOCK_LENGTH;
+                    float rZ = z * BLOCK_LENGTH;
                     // back face
-                    applyQuad(fb, type,
-                            new Vector3f(x + BLOCK_LENGTH, y, z),
-                            new Vector3f(x, y, z),
-                            new Vector3f(x, y + BLOCK_LENGTH, z),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z));
-                    // front face
-                    applyQuad(fb, type,
-                            new Vector3f(x, y, z + BLOCK_LENGTH),
-                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
-                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH));
-                    // left face
-                    applyQuad(fb, type,
-                            new Vector3f(x, y, z),
-                            new Vector3f(x, y, z + BLOCK_LENGTH),
-                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
-                            new Vector3f(x, y + BLOCK_LENGTH, z));
-                    // right face
-                    applyQuad(fb, type,
-                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
-                            new Vector3f(x + BLOCK_LENGTH, y, z),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH));
-                    // bottom face
-                    applyQuad(fb, type,
-                            new Vector3f(x, y, z),
-                            new Vector3f(x + BLOCK_LENGTH, y, z),
-                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
-                            new Vector3f(x, y, z + BLOCK_LENGTH));
-                    // top face
-                    applyQuad(fb, type,
-                            new Vector3f(x, y + BLOCK_LENGTH, z),
-                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
-                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z));
-
-                    for (float f : fb.array()) {
-                        buffer.add(f);
+                    if (!block.getRelative(BlockFace.BACK).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
+                                new Vector3f(rX, rY, rZ),
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ)));
                     }
+                    // front face
+                    if (!block.getRelative(BlockFace.FRONT).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH)));
+                    }
+                    // left face
+                    if (!block.getRelative(BlockFace.LEFT).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX, rY, rZ),
+                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ)));
+                    }
+                    // right face
+                    if (!block.getRelative(BlockFace.RIGHT).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH)));
+                    }
+                    // bottom face
+                    if (!block.getRelative(BlockFace.BOTTOM).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX, rY, rZ),
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
+                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH)));
+                    }
+                    // top face
+                    if (!block.getRelative(BlockFace.TOP).isPresent()) {
+                        faces.add(createQuad(type,
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
+                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
+                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ)));
+                    } else {
+                        System.out.println("Not rendering top face");
+                    }
+
+                    faces.forEach(fb -> {
+                        for (float f : fb.array()) {
+                            buffer.add(f);
+                        }
+                    });
                 }
             }
         }
@@ -147,13 +169,15 @@ public class BlockRenderer {
         return fb;
     }
 
-    private static void applyQuad(FloatBuffer fb, BlockType type, Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3) {
+    private static FloatBuffer createQuad(BlockType type, Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3) {
+        FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 2)));
         applyVertex(fb, c0, type, 0);
         applyVertex(fb, c1, type, 1);
         applyVertex(fb, c2, type, 2);
         applyVertex(fb, c0, type, 0);
         applyVertex(fb, c2, type, 2);
         applyVertex(fb, c3, type, 3);
+        return fb;
     }
 
     private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, int ordinal) {

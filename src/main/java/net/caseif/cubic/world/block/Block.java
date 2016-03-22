@@ -25,16 +25,25 @@
 
 package net.caseif.cubic.world.block;
 
-import net.caseif.cubic.math.vector.Vector3f;
+import static net.caseif.cubic.world.World.CHUNK_LENGTH;
+import static net.caseif.cubic.world.World.MAX_HEIGHT;
+
+import net.caseif.cubic.math.vector.Vector3i;
 import net.caseif.cubic.world.Chunk;
+
+import com.google.common.base.Preconditions;
+
+import java.util.Optional;
 
 public class Block {
 
     private final Chunk owningChunk;
-    private final Vector3f position;
+    private final Vector3i position;
     private final BlockType type;
 
-    public Block(Chunk owningChunk, Vector3f position, BlockType type) {
+    public Block(Chunk owningChunk, Vector3i position, BlockType type) {
+        Preconditions.checkArgument(position.getY() >= 0 && position.getY() < MAX_HEIGHT,
+                "Invalid y-coordinate (" + position.getY() + ") for block");
         this.position = position;
         this.owningChunk = owningChunk;
         this.type = type;
@@ -44,12 +53,67 @@ public class Block {
         return owningChunk;
     }
 
-    public Vector3f getPosition() {
+    public Vector3i getPosition() {
         return position;
     }
 
     public BlockType getType() {
         return type;
+    }
+
+    public Optional<Block> getRelative(BlockFace face) {
+        switch (face) {
+            case TOP: {
+                return position.getY() < MAX_HEIGHT - 1
+                        ? Optional.ofNullable(getOwningChunk().getBlocks()
+                        [position.getX()][position.getY() + 1][position.getZ()])
+                        : Optional.empty();
+            }
+            case BOTTOM: {
+                return position.getY() > 0
+                        ? Optional.ofNullable(getOwningChunk().getBlocks()
+                        [position.getX()][position.getY() - 1][position.getZ()])
+                        : Optional.empty();
+            }
+            case LEFT: {
+                if (position.getX() > 0) {
+                    return Optional.ofNullable(getOwningChunk().getBlocks()
+                            [position.getX() - 1][position.getY()][position.getZ()]);
+                } else {
+                    return getOwningChunk().getWorld()
+                            .getBlock(getPosition().getX() - 1, getPosition().getY(), getPosition().getZ());
+                }
+            }
+            case RIGHT: {
+                if (position.getX() < CHUNK_LENGTH - 1) {
+                    return Optional.ofNullable(getOwningChunk().getBlocks()
+                            [position.getX() + 1][position.getY()][position.getZ()]);
+                } else {
+                    return getOwningChunk().getWorld()
+                            .getBlock(getPosition().getX() + 1, getPosition().getY(), getPosition().getZ());
+                }
+            }
+            case BACK: {
+                if (position.getZ() > 0) {
+                    return Optional.ofNullable(getOwningChunk().getBlocks()
+                            [position.getX()][position.getY()][position.getZ() - 1]);
+                } else {
+                    return getOwningChunk().getWorld()
+                            .getBlock(getPosition().getX(), getPosition().getY(), getPosition().getZ() - 1);
+                }
+            }
+            case FRONT: {
+                if (position.getZ() < CHUNK_LENGTH - 1) {
+                    return Optional.ofNullable(getOwningChunk().getBlocks()
+                            [position.getX()][position.getY()][position.getZ() + 1]);
+                } else {
+                    return getOwningChunk().getWorld()
+                            .getBlock(getPosition().getX(), getPosition().getY(), getPosition().getZ() + 1);
+                }
+            }
+            default:
+                throw new AssertionError();
+        }
     }
 
 }

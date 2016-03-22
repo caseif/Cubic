@@ -23,36 +23,33 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic;
+package net.caseif.cubic.math.vector;
 
-import net.caseif.cubic.gl.GraphicsMain;
-import net.caseif.cubic.math.vector.Vector2i;
-import net.caseif.cubic.math.vector.Vector3i;
-import net.caseif.cubic.world.Chunk;
-import net.caseif.cubic.world.World;
-import net.caseif.cubic.world.block.Block;
-import net.caseif.cubic.world.block.BlockType;
+public class Vector2i {
 
-public class Main {
+    private final int x;
+    private final int y;
 
-    public static World world;
-
-    public static void main(String[] args) {
-        createDummyWorld();
-        initGraphicsThread();
+    public Vector2i(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    private static void initGraphicsThread() {
-        Thread t = new Thread(new GraphicsMain());
-        t.start();
+    public int getX() {
+        return x;
     }
 
-    private static void createDummyWorld() {
-        world = new World("world");
-        Chunk chunk = new Chunk(world, new Vector2i(0, 0));
-        world.addChunk(chunk);
-        chunk.getBlocks()[1][0][0] = new Block(chunk, new Vector3i(1, 0, 0), BlockType.STONE);
-        chunk.getBlocks()[0][0][0] = new Block(chunk, new Vector3i(0, 0, 0), BlockType.STONE);
+    public int getY() {
+        return y;
+    }
+
+    public Vector2i multiply(int scalar) {
+        return new Vector2i(x * scalar, y * scalar);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 
 }
