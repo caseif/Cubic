@@ -35,7 +35,7 @@ import java.nio.DoubleBuffer;
 
 public class MouseListener {
 
-    private static final float LOOK_RESOLUTION = 0.01f;
+    private static final float LOOK_RESOLUTION = 0.004f;
 
     private long window;
 

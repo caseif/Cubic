@@ -26,12 +26,14 @@
 package net.caseif.cubic.world;
 
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import net.caseif.cubic.math.vector.Vector2f;
 import net.caseif.cubic.world.block.Block;
 
 import org.lwjgl.opengl.GL15;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Chunk {

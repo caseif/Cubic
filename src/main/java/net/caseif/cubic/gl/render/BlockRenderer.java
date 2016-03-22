@@ -29,6 +29,8 @@ import static net.caseif.cubic.gl.GraphicsMain.CAMERA;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import net.caseif.cubic.gl.texture.Texture;
 import net.caseif.cubic.math.vector.Vector2f;
@@ -41,6 +43,7 @@ import net.caseif.cubic.world.block.BlockType;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,15 +66,15 @@ public class BlockRenderer {
                 CAMERA.getYRotation());
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotZMatrix"), false,
                 CAMERA.getZRotation());
-        world.getChunks().forEach(c -> renderVbo(c.getVboHandle(), createVbo(c)));
+        world.getChunks().forEach(c -> {
+            FloatBuffer vbo = createVbo(c);
+            int vaoHandle = prepareVbo(c.getVboHandle(), vbo);
+            //render(vaoHandle, vbo.capacity());
+        });
         glUseProgram(0);
     }
 
     private static FloatBuffer createVbo(Chunk chunk) {
-        final Vector4f red = new Vector4f(1f, 0f, 0f, 1f);
-        final Vector4f green = new Vector4f(0f, 1f, 0f, 1f);
-        final Vector4f blue = new Vector4f(0f, 0f, 1f, 1f);
-
         List<Float> buffer = new ArrayList<>();
         int chunkLen = chunk.getBlocks().length;
         int chunkHeight = chunk.getBlocks()[0].length;
@@ -82,37 +85,43 @@ public class BlockRenderer {
                         continue;
                     }
                     BlockType type = chunk.getBlocks()[x][y][z].getType();
-                    FloatBuffer fb = FloatBuffer.allocate((4 * (3 + 4)) * 6);
+                    FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 4)) * 6);
                     // back face
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y, z), type, 1);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x + BLOCK_LENGTH, y, z),
+                            new Vector3f(x, y, z),
+                            new Vector3f(x, y + BLOCK_LENGTH, z),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z));
                     // front face
-                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x, y, z + BLOCK_LENGTH),
+                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
+                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH));
                     // left face
-                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 1);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x, y, z),
+                            new Vector3f(x, y, z + BLOCK_LENGTH),
+                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
+                            new Vector3f(x, y + BLOCK_LENGTH, z));
                     // right face
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
+                            new Vector3f(x + BLOCK_LENGTH, y, z),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH));
                     // bottom face
-                    applyVertex(fb, new Vector3f(x, y, z), type, 0);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x, y, z + BLOCK_LENGTH), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x, y, z),
+                            new Vector3f(x + BLOCK_LENGTH, y, z),
+                            new Vector3f(x + BLOCK_LENGTH, y, z + BLOCK_LENGTH),
+                            new Vector3f(x, y, z + BLOCK_LENGTH));
                     // top face
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z), type, 0);
-                    applyVertex(fb, new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 1);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH), type, 2);
-                    applyVertex(fb, new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z), type, 3);
+                    applyQuad(fb, type,
+                            new Vector3f(x, y + BLOCK_LENGTH, z),
+                            new Vector3f(x, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z + BLOCK_LENGTH),
+                            new Vector3f(x + BLOCK_LENGTH, y + BLOCK_LENGTH, z));
 
                     for (float f : fb.array()) {
                         buffer.add(f);
@@ -126,6 +135,15 @@ public class BlockRenderer {
         return fb;
     }
 
+    private static void applyQuad(FloatBuffer fb, BlockType type, Vector3f c0, Vector3f c1, Vector3f c2, Vector3f c3) {
+        applyVertex(fb, c0, type, 0);
+        applyVertex(fb, c1, type, 1);
+        applyVertex(fb, c2, type, 2);
+        applyVertex(fb, c0, type, 0);
+        applyVertex(fb, c2, type, 2);
+        applyVertex(fb, c3, type, 3);
+    }
+
     private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, int ordinal) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
         Vector2f texCoords = Texture.getTexture(type).getAtlasCoords();
@@ -134,24 +152,41 @@ public class BlockRenderer {
         fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);
     }
 
-    private static void renderVbo(int handle, FloatBuffer vbo) {
+    private static int prepareVbo(int handle, FloatBuffer vbo) {
+        IntBuffer vaoHandle = BufferUtils.createIntBuffer(1);
+        glGenVertexArrays(vaoHandle);
+        glBindVertexArray(vaoHandle.get());
         glBindBuffer(GL_ARRAY_BUFFER, handle);
+
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
         glBindTexture(GL_TEXTURE_2D, Texture.atlasHandle);
 
         glEnableVertexAttribArray(positionAttrIndex);
         glEnableVertexAttribArray(texCoordAttrIndex);
+
         glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, false, 20, 0);
         glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
 
-        glDrawArrays(GL_QUADS, 0, vbo.capacity() / 5);
-        //System.out.println("GL_INVALID_OPERATION: " + (glGetError() == GL_INVALID_OPERATION));
+        glDrawArrays(GL_TRIANGLES, 0, vbo.capacity() / 5);
 
         glDisableVertexAttribArray(positionAttrIndex);
         glDisableVertexAttribArray(texCoordAttrIndex);
 
         glBindTexture(GL_TEXTURE_2D, 0);
+
+        glBindVertexArray(0);
+
+        vaoHandle.rewind();
+        return vaoHandle.get();
+    }
+
+    public static void render(int vaoHandle, int vboSize) {
+        glBindVertexArray(vaoHandle);
+        System.out.println("Error code: " + (glGetError()));
+        glDrawArrays(GL_TRIANGLES, 0, vboSize / 5);
+        System.out.println("Error code: " + (glGetError()));
+        glBindVertexArray(0);
     }
 
 }

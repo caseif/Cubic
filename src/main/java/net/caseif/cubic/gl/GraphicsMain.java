@@ -88,9 +88,9 @@ public class GraphicsMain implements Runnable {
         glfwDefaultWindowHints(); // reset the window hints
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // make it unresizble
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE); // hide it until we're done initializing it
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // using OpenGL 3.3
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // use core 3.3 profile
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // using OpenGL 3.3
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // use core profile
 
         // create the window
         window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Cubic", NULL, NULL);
