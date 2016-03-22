@@ -25,12 +25,10 @@
 
 package net.caseif.cubic.gl.callback;
 
-import static net.caseif.cubic.gl.render.Camera.MOVE_DISTANCE;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-
-import net.caseif.cubic.gl.GraphicsMain;
-import net.caseif.cubic.gl.render.Camera;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 

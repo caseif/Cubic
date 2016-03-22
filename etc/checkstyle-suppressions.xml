@@ -6,8 +6,8 @@
     <suppress checks="AbbreviationAsWordInName" files="^src[\\/](main|test)[\\/]java"/>
     <suppress checks="JavadocMethod" files="^src[\\/](main|test)[\\/]java"/>
     <suppress checks="AvoidStarImport" files="^src[\\/](main|test)[\\/]java"/>
+    <suppress checks="Indentation" files="src[\\/](main|test)[\\/]java"/>
 
     <!-- specific suppressions -->
-    <suppress checks="Indentation" files="package-info\.java"/>
     <suppress checks=".*" files="PNGDecoder\.java"/>
 </suppressions>

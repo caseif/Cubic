@@ -70,6 +70,7 @@ artifacts {
 // License header formatting
 license {
     include '**/*.java'
+    exclude '**/PNGDecoder.java'
     ignoreFailures false
 }
 
