@@ -36,6 +36,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
 
 import net.caseif.cubic.gl.GraphicsMain;
+import net.caseif.cubic.util.helper.DeltaHelper;
 
 public class KeyListener {
 
@@ -46,20 +47,24 @@ public class KeyListener {
     }
 
     public void poll() {
+        float dist = MOVE_DISTANCE * DeltaHelper.getDelta();
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveLeft(MOVE_DISTANCE);
-        } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveRight(MOVE_DISTANCE);
+            GraphicsMain.CAMERA.moveLeft(dist);
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            GraphicsMain.CAMERA.moveRight(dist);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveForward(MOVE_DISTANCE);
-        } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveBackward(MOVE_DISTANCE);
+            GraphicsMain.CAMERA.moveForward(dist);
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            GraphicsMain.CAMERA.moveBackward(dist);
         }
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveUp(MOVE_DISTANCE);
-        } else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveDown(MOVE_DISTANCE);
+            GraphicsMain.CAMERA.moveUp(dist);
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            GraphicsMain.CAMERA.moveDown(dist);
         }
     }
 

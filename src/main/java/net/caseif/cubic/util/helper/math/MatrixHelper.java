@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.util.helper;
+package net.caseif.cubic.util.helper.math;
 
 import static net.caseif.cubic.math.matrix.Matrix4f.SIZE;
 
@@ -33,7 +33,7 @@ import net.caseif.cubic.math.vector.Vector3f;
 @SuppressWarnings("PointlessArithmeticExpression")
 public class MatrixHelper {
 
-    public static final Matrix4f IDENTITY = new Matrix4f(new float[] {
+    private static final Matrix4f IDENTITY = new Matrix4f(new float[] {
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
@@ -48,7 +48,7 @@ public class MatrixHelper {
         return frustum(x1, x2, y1, y2, near, far);
     }
 
-    public static Matrix4f frustum(float left, float right, float bottom, float top, float near, float far) {
+    private static Matrix4f frustum(float left, float right, float bottom, float top, float near, float far) {
         float[] elements = new float[SIZE];
 
         elements[0 + 0 * 4] =  (2 * near) / (right - left);

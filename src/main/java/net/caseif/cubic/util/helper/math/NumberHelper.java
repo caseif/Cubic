@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.util.helper;
+package net.caseif.cubic.util.helper.math;
 
 public class NumberHelper {
 

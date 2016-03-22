@@ -26,14 +26,14 @@
 package net.caseif.cubic.gl.render;
 
 import net.caseif.cubic.math.vector.Vector3f;
-import net.caseif.cubic.util.helper.MatrixHelper;
-import net.caseif.cubic.util.helper.NumberHelper;
+import net.caseif.cubic.util.helper.math.MatrixHelper;
+import net.caseif.cubic.util.helper.math.NumberHelper;
 
 import java.nio.FloatBuffer;
 
 public class Camera {
 
-    public static final float MOVE_DISTANCE = 0.02f;
+    public static final float MOVE_DISTANCE = 2f; // move distance per second
 
     private Vector3f translation = new Vector3f(0f, 0f, 2f);
     private Vector3f rotation = new Vector3f(0f, 0f, 0f);

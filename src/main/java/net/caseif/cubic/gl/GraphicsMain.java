@@ -39,8 +39,9 @@ import net.caseif.cubic.gl.texture.Texture;
 import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.input.MouseListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
+import net.caseif.cubic.util.helper.DeltaHelper;
 import net.caseif.cubic.util.helper.ImageHelper;
-import net.caseif.cubic.util.helper.MatrixHelper;
+import net.caseif.cubic.util.helper.math.MatrixHelper;
 import net.caseif.cubic.world.block.BlockType;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -77,10 +78,9 @@ public class GraphicsMain implements Runnable {
     }
 
     private void init() {
-        // set the error callback
-        glfwSetErrorCallback(errorCallback);
+        DeltaHelper.updateDelta();
 
-        // whoops
+        glfwSetErrorCallback(errorCallback); // set the error callback
         if (glfwInit() != GL_TRUE) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
@@ -92,10 +92,7 @@ public class GraphicsMain implements Runnable {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // use core profile
 
-        // create the window
-        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Cubic", NULL, NULL);
-
-        // whoops
+        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Cubic", NULL, NULL); // create the window
         if (window == NULL) {
             throw new RuntimeException("Could not create GLFW window");
         }
@@ -105,16 +102,13 @@ public class GraphicsMain implements Runnable {
         mouseListener = new MouseListener(window);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-        // get the video mode of the primary monitor
-        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor()); // get the video mode of the primary monitor
 
         // center the window
         glfwSetWindowPos(window, (vidmode.width() - WINDOW_WIDTH) / 2, (vidmode.height() - WINDOW_HEIGHT) / 2);
 
-        // set the current context
-        glfwMakeContextCurrent(window);
-        // enable vsync
-        glfwSwapInterval(1);
+        glfwMakeContextCurrent(window);// set the current context
+        glfwSwapInterval(1); // enable vsync
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
