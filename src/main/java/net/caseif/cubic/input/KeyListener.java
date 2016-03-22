@@ -26,14 +26,7 @@
 package net.caseif.cubic.input;
 
 import static net.caseif.cubic.gl.render.Camera.MOVE_DISTANCE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.glfwGetKey;
+import static org.lwjgl.glfw.GLFW.*;
 
 import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.util.helper.DeltaHelper;

@@ -26,7 +26,7 @@
 package net.caseif.cubic.gl.render;
 
 import static org.lwjgl.opengl.ARBShaderObjects.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
 import java.io.BufferedReader;

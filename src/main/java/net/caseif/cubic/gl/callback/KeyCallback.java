@@ -25,10 +25,8 @@
 
 package net.caseif.cubic.gl.callback;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 

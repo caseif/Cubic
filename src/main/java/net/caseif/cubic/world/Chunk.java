@@ -25,7 +25,7 @@
 
 package net.caseif.cubic.world;
 
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import net.caseif.cubic.math.vector.Vector2f;
 import net.caseif.cubic.world.block.Block;
