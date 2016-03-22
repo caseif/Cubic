@@ -25,14 +25,13 @@
 
 package net.caseif.cubic.world;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static net.caseif.cubic.world.World.CHUNK_LENGTH;
 import static net.caseif.cubic.world.World.MAX_HEIGHT;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import net.caseif.cubic.math.vector.Vector2i;
 import net.caseif.cubic.world.block.Block;
-
-import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
@@ -59,16 +58,22 @@ public class Chunk {
         return position;
     }
 
-    public Block[][][] getBlocks() {
-        return blocks;
-    }
-
     public Optional<Block> getBlock(int x, int y, int z) {
-        Preconditions.checkArgument(x >= 0 && x < CHUNK_LENGTH
-                && z >= 0 && z < CHUNK_LENGTH
-                && y >= 0 && y < MAX_HEIGHT,
+        checkArgument(x >= 0 && x < CHUNK_LENGTH
+                        && z >= 0 && z < CHUNK_LENGTH
+                        && y >= 0 && y < MAX_HEIGHT,
                 "Invalid coordinates (" + x + ", " + y + ", " + z + ") passed to Chunk#getBlock");
         return Optional.ofNullable(blocks[x][y][z]);
+    }
+
+    public void addBlock(Block block) {
+        int x = block.getPosition().getX();
+        int y = block.getPosition().getY();
+        int z = block.getPosition().getZ();
+        checkArgument(x / CHUNK_LENGTH == position.getX() && z / CHUNK_LENGTH == position.getY(),
+                "Invalid block at (" + x + ", " + y + ", " + z
+                        + ") added to chunk at (" + position.getX() + ", " + position.getY() + ")");
+        blocks[x % CHUNK_LENGTH][y][z % CHUNK_LENGTH] = block;
     }
 
     public Vector2i getMinWorldPosition() {

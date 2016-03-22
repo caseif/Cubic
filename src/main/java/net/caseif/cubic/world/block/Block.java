@@ -65,20 +65,17 @@ public class Block {
         switch (face) {
             case TOP: {
                 return position.getY() < MAX_HEIGHT - 1
-                        ? Optional.ofNullable(getOwningChunk().getBlocks()
-                        [position.getX()][position.getY() + 1][position.getZ()])
+                        ? getOwningChunk().getBlock(position.getX(), position.getY() + 1, position.getZ())
                         : Optional.empty();
             }
             case BOTTOM: {
                 return position.getY() > 0
-                        ? Optional.ofNullable(getOwningChunk().getBlocks()
-                        [position.getX()][position.getY() - 1][position.getZ()])
+                        ? getOwningChunk().getBlock(position.getX(), position.getY() - 1, position.getZ())
                         : Optional.empty();
             }
             case LEFT: {
                 if (position.getX() > 0) {
-                    return Optional.ofNullable(getOwningChunk().getBlocks()
-                            [position.getX() - 1][position.getY()][position.getZ()]);
+                    return getOwningChunk().getBlock(position.getX() - 1, position.getY(), position.getZ());
                 } else {
                     return getOwningChunk().getWorld()
                             .getBlock(getPosition().getX() - 1, getPosition().getY(), getPosition().getZ());
@@ -86,8 +83,7 @@ public class Block {
             }
             case RIGHT: {
                 if (position.getX() < CHUNK_LENGTH - 1) {
-                    return Optional.ofNullable(getOwningChunk().getBlocks()
-                            [position.getX() + 1][position.getY()][position.getZ()]);
+                    return getOwningChunk().getBlock(position.getX() + 1, position.getY(), position.getZ());
                 } else {
                     return getOwningChunk().getWorld()
                             .getBlock(getPosition().getX() + 1, getPosition().getY(), getPosition().getZ());
@@ -95,8 +91,7 @@ public class Block {
             }
             case BACK: {
                 if (position.getZ() > 0) {
-                    return Optional.ofNullable(getOwningChunk().getBlocks()
-                            [position.getX()][position.getY()][position.getZ() - 1]);
+                    return getOwningChunk().getBlock(position.getX(), position.getY(), position.getZ() - 1);
                 } else {
                     return getOwningChunk().getWorld()
                             .getBlock(getPosition().getX(), getPosition().getY(), getPosition().getZ() - 1);
@@ -104,8 +99,7 @@ public class Block {
             }
             case FRONT: {
                 if (position.getZ() < CHUNK_LENGTH - 1) {
-                    return Optional.ofNullable(getOwningChunk().getBlocks()
-                            [position.getX()][position.getY()][position.getZ() + 1]);
+                    return getOwningChunk().getBlock(position.getX(), position.getY(), position.getZ() + 1);
                 } else {
                     return getOwningChunk().getWorld()
                             .getBlock(getPosition().getX(), getPosition().getY(), getPosition().getZ() + 1);
