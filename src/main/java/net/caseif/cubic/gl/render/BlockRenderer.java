@@ -30,6 +30,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 import net.caseif.cubic.gl.texture.Texture;
@@ -46,15 +47,18 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class BlockRenderer {
-
-    private static final int globalHandle = glGenBuffers();
 
     private static final float BLOCK_LENGTH = 0.5f;
 
     private static final int positionAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_position");
     private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
+
+    private static final Map<Chunk, Integer> CHUNK_VBO_SIZES = new WeakHashMap<>();
+    private static final Map<Chunk, Integer> CHUNK_VAO_HANDLES = new WeakHashMap<>();
 
     public static void render(World world) {
         glUseProgram(ShaderHelper.cameraShader);
@@ -66,10 +70,18 @@ public class BlockRenderer {
                 CAMERA.getYRotation());
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotZMatrix"), false,
                 CAMERA.getZRotation());
-        world.getChunks().forEach(c -> {
-            FloatBuffer vbo = createVbo(c);
-            int vaoHandle = prepareVbo(c.getVboHandle(), vbo);
-            //render(vaoHandle, vbo.capacity());
+        world.getChunks().forEach(chunk -> {
+            if (chunk.isDirty()) {
+                FloatBuffer vbo = createVbo(chunk);
+
+                if (CHUNK_VAO_HANDLES.containsKey(chunk)) {
+                    glDeleteVertexArrays(CHUNK_VAO_HANDLES.get(chunk));
+                }
+
+                CHUNK_VBO_SIZES.put(chunk, vbo.capacity());
+                CHUNK_VAO_HANDLES.put(chunk, prepareVbo(chunk.getVboHandle(), vbo));
+            }
+            render(chunk);
         });
         glUseProgram(0);
     }
@@ -132,6 +144,9 @@ public class BlockRenderer {
         FloatBuffer fb = BufferUtils.createFloatBuffer(buffer.size());
         buffer.forEach(fb::put);
         fb.flip();
+
+        chunk.setDirty(false);
+
         return fb;
     }
 
@@ -168,24 +183,15 @@ public class BlockRenderer {
         glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, false, 20, 0);
         glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
 
-        glDrawArrays(GL_TRIANGLES, 0, vbo.capacity() / 5);
-
-        glDisableVertexAttribArray(positionAttrIndex);
-        glDisableVertexAttribArray(texCoordAttrIndex);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-
         glBindVertexArray(0);
 
         vaoHandle.rewind();
         return vaoHandle.get();
     }
 
-    public static void render(int vaoHandle, int vboSize) {
-        glBindVertexArray(vaoHandle);
-        System.out.println("Error code: " + (glGetError()));
-        glDrawArrays(GL_TRIANGLES, 0, vboSize / 5);
-        System.out.println("Error code: " + (glGetError()));
+    public static void render(Chunk chunk) {
+        glBindVertexArray(CHUNK_VAO_HANDLES.get(chunk));
+        glDrawArrays(GL_TRIANGLES, 0, CHUNK_VBO_SIZES.get(chunk) / 5);
         glBindVertexArray(0);
     }
 

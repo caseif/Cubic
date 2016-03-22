@@ -39,6 +39,7 @@ import java.nio.IntBuffer;
 public class Chunk {
 
     private int vboHandle = -1;
+    private boolean dirty = true;
 
     private World world;
     private Vector2f position;
@@ -64,6 +65,14 @@ public class Chunk {
 
     public Vector2f getMinWorldPosition() {
         return position.multiply(World.CHUNK_LENGTH);
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
     public int getVboHandle() {
