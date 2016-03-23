@@ -30,13 +30,10 @@ import static net.caseif.cubic.gl.GraphicsMain.TEXTURE_REGISTRY;
 import static net.caseif.cubic.world.World.CHUNK_LENGTH;
 import static net.caseif.cubic.world.World.MAX_HEIGHT;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;

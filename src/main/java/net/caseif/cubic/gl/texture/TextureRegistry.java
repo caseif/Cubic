@@ -31,12 +31,9 @@ import static org.lwjgl.opengl.ARBTextureStorage.glTexStorage3D;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL12.glTexSubImage3D;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 
 import net.caseif.cubic.gl.GraphicsMain;
-import net.caseif.cubic.math.vector.Vector2f;
 import net.caseif.cubic.util.helper.ImageHelper;
 import net.caseif.cubic.world.block.BlockFace;
 import net.caseif.cubic.world.block.BlockType;
@@ -48,7 +45,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -136,7 +132,6 @@ public class TextureRegistry {
         createTexture(BlockType.GRASS);
         createTexture(BlockType.GRASS, BlockFace.TOP);
         createTexture(BlockType.GRASS, BlockFace.BOTTOM);
-        createTexture(BlockType.DIRT);
 
         createTextureArray();
 
