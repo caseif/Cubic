@@ -27,7 +27,13 @@ package net.caseif.cubic.gl.texture;
 
 import static com.google.common.base.Preconditions.checkState;
 import static net.caseif.cubic.gl.texture.Texture.SIZE;
+import static org.lwjgl.opengl.ARBTextureStorage.glTexStorage3D;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL12.glTexSubImage3D;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 
 import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector2f;
@@ -38,11 +44,11 @@ import net.caseif.cubic.world.block.BlockType;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,55 +97,36 @@ public class TextureRegistry {
         createTexture(type, null);
     }
 
-    private void createAtlas() {
-        int width = textures.size() * Texture.SIZE;
-        int height = Texture.SIZE;
-        BufferedImage atlas = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = atlas.createGraphics();
-        int y = 0;
-        int i = 0;
-        for (TextureKey key : textures.keySet()) {
-            int x = i * Texture.SIZE;
-            g.drawImage(textures.get(key).getImage(), x, y, null);
-            textures.get(key).setAtlasCoords(new Vector2f((float) x / width, (float) y / height));
-            i++;
-        }
-        Texture.atlasSize = width;
+    private void createTextureArray() {
+        int handle = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D_ARRAY, handle);
+
+        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, Texture.SIZE, Texture.SIZE, textures.size());
 
         try {
-            Texture.atlasHandle = createGLTextureFromStream(ImageHelper.asInputStream(atlas));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.err.println("Failed to load block atlas as texture");
-            System.exit(-1);
-        }
-    }
+            int layer = 0;
+            for (Texture tex : textures.values()) {
+                PNGDecoder decoder = new PNGDecoder(ImageHelper.asInputStream(tex.getImage()));
+                ByteBuffer buffer = BufferUtils.createByteBuffer(decoder.getWidth() * decoder.getHeight() * 4);
+                decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+                buffer.flip();
 
-    private int createGLTextureFromStream(InputStream stream) {
-        try {
-            PNGDecoder decoder = new PNGDecoder(stream);
-            ByteBuffer buffer = BufferUtils.createByteBuffer(decoder.getWidth() * decoder.getHeight() * 4);
-            decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
-            buffer.flip();
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, decoder.getWidth(), decoder.getHeight(), 1,
+                        GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-            int handle = glGenTextures();
-            glBindTexture(GL_TEXTURE_2D, handle);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA,
-                    GL_UNSIGNED_BYTE, buffer);
-            glBindTexture(GL_TEXTURE_2D, 0);
+                tex.setLayer(layer);
 
-            return handle;
+                layer++;
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
-            System.err.println("Failed to load texture!");
             System.exit(-1);
         }
 
-        return -1;
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
     public void registerTextures() {
@@ -149,8 +136,9 @@ public class TextureRegistry {
         createTexture(BlockType.GRASS);
         createTexture(BlockType.GRASS, BlockFace.TOP);
         createTexture(BlockType.GRASS, BlockFace.BOTTOM);
+        createTexture(BlockType.DIRT);
 
-        createAtlas();
+        createTextureArray();
 
         this.areTexturesRegistered = true;
     }

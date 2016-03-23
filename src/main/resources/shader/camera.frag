@@ -1,9 +1,9 @@
-#version 330
+#version 330 core
 
-varying vec2 texCoord;
+uniform sampler2DArray texArray;
 
-uniform sampler2D texture;
+in vec3 texCoord;
 
 void main() {
-    gl_FragColor = texture2D(texture, texCoord);
+    gl_FragColor = texture(texArray, texCoord);
 }

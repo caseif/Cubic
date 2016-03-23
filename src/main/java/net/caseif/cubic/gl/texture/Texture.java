@@ -25,18 +25,14 @@
 
 package net.caseif.cubic.gl.texture;
 
-import net.caseif.cubic.math.vector.Vector2f;
-
 import java.awt.image.BufferedImage;
 
 public class Texture {
 
     public static final int SIZE = 128;
-    public static int atlasHandle;
-    public static float atlasSize;
 
     private BufferedImage image;
-    private Vector2f atlasCoords;
+    private int layer;
 
     Texture(BufferedImage image) {
         this.image = image;
@@ -46,12 +42,12 @@ public class Texture {
         return image;
     }
 
-    public Vector2f getAtlasCoords() {
-        return atlasCoords;
+    public int getLayer() {
+        return layer;
     }
 
-    public void setAtlasCoords(Vector2f coords) {
-        this.atlasCoords = coords;
+    public void setLayer(int layer) {
+        this.layer = layer;
     }
 
 }

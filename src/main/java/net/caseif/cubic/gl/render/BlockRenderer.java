@@ -30,12 +30,13 @@ import static net.caseif.cubic.gl.GraphicsMain.TEXTURE_REGISTRY;
 import static net.caseif.cubic.world.World.CHUNK_LENGTH;
 import static net.caseif.cubic.world.World.MAX_HEIGHT;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-import net.caseif.cubic.gl.texture.Texture;
-import net.caseif.cubic.math.vector.Vector2f;
+import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
@@ -173,7 +174,7 @@ public class BlockRenderer {
 
     private static FloatBuffer createQuad(BlockType type, BlockFace face, Vector3f c0, Vector3f c1, Vector3f c2,
             Vector3f c3) {
-        FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 2)));
+        FloatBuffer fb = FloatBuffer.allocate((6 * (3 + 3)));
         applyVertex(fb, c0, type, face, 0);
         applyVertex(fb, c1, type, face, 1);
         applyVertex(fb, c2, type, face, 2);
@@ -185,10 +186,10 @@ public class BlockRenderer {
 
     private static void applyVertex(FloatBuffer fb, Vector3f location, BlockType type, BlockFace face, int ordinal) {
         fb.put(location.getX()).put(location.getY()).put(location.getZ());
-        Vector2f texCoords = TEXTURE_REGISTRY.getTexture(type, face).getAtlasCoords();
-        float xAdd = ordinal == 1 || ordinal == 2 ? (float) Texture.SIZE / Texture.atlasSize : 0;
-        float yAdd = ordinal >= 2 ? 0 : 1; // dunno why this needs to be flipped, but it works
-        fb.put(texCoords.getX() + xAdd).put(texCoords.getY() + yAdd);
+        int texLayer = TEXTURE_REGISTRY.getTexture(type, face).getLayer();
+        float x = ordinal == 1 || ordinal == 2 ? 1 : 0;
+        float y = ordinal >= 2 ? 0 : 1;
+        fb.put(x).put(y).put(texLayer);
     }
 
     private static int prepareVbo(int handle, FloatBuffer vbo) {
@@ -199,13 +200,11 @@ public class BlockRenderer {
 
         glBufferData(GL_ARRAY_BUFFER, vbo, GL_STATIC_DRAW);
 
-        glBindTexture(GL_TEXTURE_2D, Texture.atlasHandle);
-
         glEnableVertexAttribArray(positionAttrIndex);
         glEnableVertexAttribArray(texCoordAttrIndex);
 
-        glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, false, 20, 0);
-        glVertexAttribPointer(texCoordAttrIndex, 2, GL_FLOAT, false, 20, 12);
+        glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, false, 24, 0);
+        glVertexAttribPointer(texCoordAttrIndex, 3, GL_FLOAT, false, 24, 12);
 
         glBindVertexArray(0);
 
@@ -215,7 +214,7 @@ public class BlockRenderer {
 
     private static void render(Chunk chunk) {
         glBindVertexArray(CHUNK_VAO_HANDLES.get(chunk));
-        glDrawArrays(GL_TRIANGLES, 0, CHUNK_VBO_SIZES.get(chunk) / 5);
+        glDrawArrays(GL_TRIANGLES, 0, CHUNK_VBO_SIZES.get(chunk) / 6);
         glBindVertexArray(0);
     }
 
