@@ -25,8 +25,10 @@
 
 package net.caseif.cubic;
 
+import net.caseif.cubic.entity.living.player.Player;
 import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector2i;
+import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.math.vector.Vector3i;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
@@ -36,6 +38,7 @@ import net.caseif.cubic.world.block.BlockType;
 public class Main {
 
     public static World world;
+    public static Player player;
 
     public static void main(String[] args) {
         createDummyWorld();
@@ -52,7 +55,7 @@ public class Main {
         Chunk chunk = new Chunk(world, new Vector2i(0, 0));
         world.addChunk(chunk);
         chunk.addBlock(new Block(chunk, new Vector3i(0, 0, 0), BlockType.GRASS));
-        //chunk.addBlock(new Block(chunk, new Vector3i(1, 0, 0), BlockType.STONE));
+        player = new Player(world, new Vector3f(0, 0, 2));
     }
 
 }

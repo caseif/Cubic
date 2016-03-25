@@ -25,11 +25,11 @@
 
 package net.caseif.cubic.input;
 
-import static net.caseif.cubic.gl.render.Camera.MOVE_DISTANCE;
 import static org.lwjgl.glfw.GLFW.*;
 
+import net.caseif.cubic.Main;
 import net.caseif.cubic.gl.GraphicsMain;
-import net.caseif.cubic.util.helper.DeltaHelper;
+import net.caseif.cubic.math.vector.Vector3f;
 
 public class KeyListener {
 
@@ -40,25 +40,34 @@ public class KeyListener {
     }
 
     public void poll() {
-        float dist = MOVE_DISTANCE * DeltaHelper.getDelta();
+        float speed = Main.player.getSpeed();
+        float vx = 0f;
+        float vy = 0f;
+        float vz = 0f;
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveLeft(dist);
+            vx -= speed * (float) Math.cos(GraphicsMain.CAMERA.getRotation().getY());
+            vz -= speed * (float) Math.sin(GraphicsMain.CAMERA.getRotation().getY());
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveRight(dist);
+            vx += speed * (float) Math.cos(GraphicsMain.CAMERA.getRotation().getY());
+            vz += speed * (float) Math.sin(GraphicsMain.CAMERA.getRotation().getY());
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveForward(dist);
+            vx -= speed * (float) -Math.sin(GraphicsMain.CAMERA.getRotation().getY());
+            vz -= speed * (float) Math.cos(GraphicsMain.CAMERA.getRotation().getY());
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveBackward(dist);
-        }
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveUp(dist);
+            vx += speed * (float) -Math.sin(GraphicsMain.CAMERA.getRotation().getY());
+            vz += speed * (float) Math.cos(GraphicsMain.CAMERA.getRotation().getY());
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            GraphicsMain.CAMERA.moveDown(dist);
+            vy = -speed;
         }
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            vy = speed;
+        }
+
+        Main.player.setVelocity(new Vector3f(vx, vy, vz));
     }
 
 }

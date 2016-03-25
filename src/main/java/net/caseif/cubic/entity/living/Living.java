@@ -23,47 +23,17 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.math.vector;
+package net.caseif.cubic.entity.living;
 
-public class Vector3f {
+import net.caseif.cubic.entity.Entity;
+import net.caseif.cubic.entity.EntityType;
+import net.caseif.cubic.math.vector.Vector3f;
+import net.caseif.cubic.world.World;
 
-    private final float x;
-    private final float y;
-    private final float z;
+public abstract class Living extends Entity {
 
-    public Vector3f(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public Vector3f add(Vector3f vector) {
-        return new Vector3f(this.x + vector.x, this.y + vector.y, this.z + vector.z);
-    }
-
-    public Vector3f add(float x, float y, float z) {
-        return new Vector3f(this.x + x, this.y + y, this.z + z);
-    }
-
-    public Vector3f multiply(float scalar) {
-        return new Vector3f(this.x * scalar, this.y * scalar, this.z * scalar);
-    }
-
-    @Override
-    public String toString() {
-        return "(" + getX() + ", " + getY() + ", " + getZ() + ")";
+    protected Living(EntityType type, float speed, World world, Vector3f position) {
+        super(type, speed, world, position);
     }
 
 }

@@ -33,40 +33,18 @@ import java.nio.FloatBuffer;
 
 public class Camera {
 
-    public static final float MOVE_DISTANCE = 2f; // move distance per second
-
-    private Vector3f translation = new Vector3f(0f, 0f, 2f);
+    private Vector3f translation = new Vector3f(0f, 0f, 0f);
     private Vector3f rotation = new Vector3f(0f, 0f, 0f);
 
     public Camera() {
     }
 
-    public void moveBackward(float units) {
-        float dx = units * (float) -Math.sin(rotation.getY());
-        float dz = units * (float) Math.cos(rotation.getY());
-        translation = translation.add(dx, 0, dz);
+    public Vector3f getRotation() {
+        return this.rotation;
     }
 
-    public void moveForward(float units) {
-        moveBackward(-units);
-    }
-
-    public void moveRight(float units) {
-        float dx = units * (float) Math.cos(rotation.getY());
-        float dz = units * (float) Math.sin(rotation.getY());
-        translation = translation.add(dx, 0, dz);
-    }
-
-    public void moveLeft(float units) {
-        moveRight(-units);
-    }
-
-    public void moveUp(float units) {
-        translation = translation.add(0, units, 0);
-    }
-
-    public void moveDown(float units) {
-        moveUp(-units);
+    public void setTranslation(Vector3f translation) {
+        this.translation = translation;
     }
 
     public void addPitch(float pitch) {
@@ -86,15 +64,15 @@ public class Camera {
         return MatrixHelper.getTranslationMatrix(translation.multiply(-1)).toBuffer();
     }
 
-    public FloatBuffer getXRotation() {
+    public FloatBuffer getXRotationMatrix() {
         return MatrixHelper.getXRotationMatrix(rotation.getX()).toBuffer();
     }
 
-    public FloatBuffer getYRotation() {
+    public FloatBuffer getYRotationMatrix() {
         return MatrixHelper.getYRotationMatrix(rotation.getY()).toBuffer();
     }
 
-    public FloatBuffer getZRotation() {
+    public FloatBuffer getZRotationMatrix() {
         return MatrixHelper.getZRotationMatrix(rotation.getZ()).toBuffer();
     }
 

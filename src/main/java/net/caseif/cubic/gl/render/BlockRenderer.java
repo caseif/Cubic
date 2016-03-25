@@ -66,11 +66,11 @@ public class BlockRenderer {
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "translationMatrix"), false,
                 CAMERA.getTranslationMatrix());
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotXMatrix"), false,
-                CAMERA.getXRotation());
+                CAMERA.getXRotationMatrix());
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotYMatrix"), false,
-                CAMERA.getYRotation());
+                CAMERA.getYRotationMatrix());
         glUniformMatrix4fv(glGetUniformLocation(ShaderHelper.cameraShader, "rotZMatrix"), false,
-                CAMERA.getZRotation());
+                CAMERA.getZRotationMatrix());
         world.getChunks().forEach(chunk -> {
             if (chunk.isDirty()) {
                 FloatBuffer vbo = createVbo(chunk);

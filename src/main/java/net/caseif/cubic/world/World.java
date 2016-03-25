@@ -27,13 +27,16 @@ package net.caseif.cubic.world;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.math.vector.Vector2i;
 import net.caseif.cubic.world.block.Block;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class World {
 
@@ -42,6 +45,7 @@ public class World {
 
     private String name;
     private Map<Vector2i, Chunk> chunkMap = new HashMap<>();
+    private static Set<Entity> entities = new HashSet<>();
 
     public World(String name) {
         this.name = name;
@@ -74,6 +78,18 @@ public class World {
         int chunkZ = z / CHUNK_LENGTH;
         Optional<Chunk> c = getChunk(new Vector2i(chunkX, chunkZ));
         return c.isPresent() ? c.get().getBlock(x % CHUNK_LENGTH, y % MAX_HEIGHT, z % CHUNK_LENGTH) : Optional.empty();
+    }
+
+    public Optional<Block> getBlock(float x, float y, float z) {
+        return getBlock((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+    }
+
+    public Set<Entity> getEntities() {
+        return entities;
+    }
+
+    public void addEntity(Entity entity) {
+        entities.add(entity);
     }
 
 }

@@ -31,6 +31,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import net.caseif.cubic.Main;
+import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.gl.callback.KeyCallback;
 import net.caseif.cubic.gl.render.BlockRenderer;
 import net.caseif.cubic.gl.render.Camera;
@@ -66,7 +67,8 @@ public class GraphicsMain implements Runnable {
 
     public void run() {
         try {
-            init();
+            initGLFW();
+            initGL();
             mainLoop();
 
             glfwDestroyWindow(window);
@@ -76,7 +78,7 @@ public class GraphicsMain implements Runnable {
         }
     }
 
-    private void init() {
+    private void initGLFW() {
         DeltaHelper.updateDelta();
 
         glfwSetErrorCallback(errorCallback); // set the error callback
@@ -145,11 +147,12 @@ public class GraphicsMain implements Runnable {
         errorCallback.release();
     }
 
-    private void mainLoop() {
-
+    private void initGL() {
         GL.createCapabilities();
+        glClearColor(0.67f, 0.77f, 0.95f, 1f);
+    }
 
-        glClearColor(1f, 1f, 0f, 1f);
+    private void mainLoop() {
 
         while (glfwWindowShouldClose(window) == GL_FALSE) {
             keyListener.poll();
@@ -165,6 +168,8 @@ public class GraphicsMain implements Runnable {
 
             // poll for events (like key events)
             glfwPollEvents();
+
+            Main.world.getEntities().forEach(Entity::updatePosition);
         }
     }
 

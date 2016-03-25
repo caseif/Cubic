@@ -23,47 +23,10 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.math.vector;
+package net.caseif.cubic.entity;
 
-public class Vector3f {
+public enum EntityType {
 
-    private final float x;
-    private final float y;
-    private final float z;
-
-    public Vector3f(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public Vector3f add(Vector3f vector) {
-        return new Vector3f(this.x + vector.x, this.y + vector.y, this.z + vector.z);
-    }
-
-    public Vector3f add(float x, float y, float z) {
-        return new Vector3f(this.x + x, this.y + y, this.z + z);
-    }
-
-    public Vector3f multiply(float scalar) {
-        return new Vector3f(this.x * scalar, this.y * scalar, this.z * scalar);
-    }
-
-    @Override
-    public String toString() {
-        return "(" + getX() + ", " + getY() + ", " + getZ() + ")";
-    }
+    PLAYER;
 
 }
