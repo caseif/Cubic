@@ -78,10 +78,14 @@ public class World {
     }
 
     public Optional<Block> getBlock(int x, int y, int z) {
+        checkArgument(y >= 0 && y < MAX_HEIGHT, "Invalid y-coordinate passed to World#getBlock");
         int chunkX = x / CHUNK_LENGTH;
         int chunkZ = z / CHUNK_LENGTH;
         Optional<Chunk> c = getChunk(new Vector2i(chunkX, chunkZ));
-        return c.isPresent() ? c.get().getBlock(x % CHUNK_LENGTH, y % MAX_HEIGHT, z % CHUNK_LENGTH) : Optional.empty();
+        // normalize the x- and z-coordinates
+        int normX = x < 0 ? 16 - (Math.abs(x) % CHUNK_LENGTH) : (x % CHUNK_LENGTH);
+        int normZ = z < 0 ? 16 - (Math.abs(z) % CHUNK_LENGTH) : (z % CHUNK_LENGTH);
+        return c.isPresent() ? c.get().getBlock(normX, y, normZ) : Optional.empty();
     }
 
     public Optional<Block> getBlock(float x, float y, float z) {

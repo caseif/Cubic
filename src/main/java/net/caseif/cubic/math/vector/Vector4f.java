@@ -25,6 +25,8 @@
 
 package net.caseif.cubic.math.vector;
 
+import java.util.Objects;
+
 public class Vector4f {
 
     private final float x;
@@ -62,6 +64,20 @@ public class Vector4f {
     @Override
     public String toString() {
         return "(" + getX() + ", " + getY() + ", " + getZ() + ", " + getW() + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Vector4f)) {
+            return false;
+        }
+        Vector4f vec = (Vector4f) obj;
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z && this.w == vec.w;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, w);
     }
 
 }

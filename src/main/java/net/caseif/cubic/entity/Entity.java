@@ -85,7 +85,7 @@ public abstract class Entity {
     }
 
     public void updatePosition() {
-        doCollisionChecks();
+        //doCollisionChecks(); //TODO: fix collision checks
         position = position.add(velocity.multiply(1f / TickManager.TICKS_PER_SECOND));
     }
 

@@ -25,6 +25,8 @@
 
 package net.caseif.cubic.gl.render;
 
+import static net.caseif.cubic.gl.render.BlockRenderer.UNIT_LENGTH;
+
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.util.helper.math.MatrixHelper;
 import net.caseif.cubic.util.helper.math.NumberHelper;
@@ -44,7 +46,7 @@ public class Camera {
     }
 
     public void setTranslation(Vector3f translation) {
-        this.translation = translation;
+        this.translation = translation.multiply(UNIT_LENGTH);
     }
 
     public void addPitch(float pitch) {

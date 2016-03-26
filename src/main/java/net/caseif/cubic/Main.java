@@ -25,7 +25,6 @@
 
 package net.caseif.cubic;
 
-import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.entity.living.player.Player;
 import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector2i;
@@ -62,7 +61,7 @@ public class Main {
         Chunk chunk = new Chunk(world, new Vector2i(0, 0));
         world.addChunk(chunk);
         chunk.addBlock(new Block(chunk, new Vector3i(0, 0, 0), BlockType.GRASS));
-        player = new Player(world, new Vector3f(0, 0, 2));
+        player = new Player(world, new Vector3f(0, 0, 3));
     }
 
     private static void startMainLoop() {

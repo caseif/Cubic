@@ -53,7 +53,7 @@ import java.util.WeakHashMap;
 
 public class BlockRenderer {
 
-    private static final float BLOCK_LENGTH = 0.5f;
+    static final float UNIT_LENGTH = 0.5f;
 
     private static final int positionAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_position");
     private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
@@ -98,56 +98,56 @@ public class BlockRenderer {
                     }
                     BlockType type = block.get().getType();
                     List<FloatBuffer> faces = new ArrayList<>();
-                    float rX = x * BLOCK_LENGTH;
-                    float rY = y * BLOCK_LENGTH;
-                    float rZ = z * BLOCK_LENGTH;
+                    float rX = x * UNIT_LENGTH;
+                    float rY = y * UNIT_LENGTH;
+                    float rZ = z * UNIT_LENGTH;
                     // back face
                     if (!block.get().getRelative(BlockFace.BACK).isPresent()) {
                         faces.add(createQuad(type, BlockFace.BACK,
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ),
                                 new Vector3f(rX, rY, rZ),
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ)));
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ)));
                     }
                     // front face
                     if (!block.get().getRelative(BlockFace.FRONT).isPresent()) {
                         faces.add(createQuad(type, BlockFace.FRONT,
-                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH)));
+                                new Vector3f(rX, rY, rZ + UNIT_LENGTH),
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ + UNIT_LENGTH),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ + UNIT_LENGTH)));
                     }
                     // left face
                     if (!block.get().getRelative(BlockFace.LEFT).isPresent()) {
                         faces.add(createQuad(type, BlockFace.LEFT,
                                 new Vector3f(rX, rY, rZ),
-                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ)));
+                                new Vector3f(rX, rY, rZ + UNIT_LENGTH),
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ)));
                     }
                     // right face
                     if (!block.get().getRelative(BlockFace.RIGHT).isPresent()) {
                         faces.add(createQuad(type, BlockFace.RIGHT,
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH)));
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ + UNIT_LENGTH),
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ + UNIT_LENGTH)));
                     }
                     // bottom face
                     if (!block.get().getRelative(BlockFace.BOTTOM).isPresent()) {
                         faces.add(createQuad(type, BlockFace.BOTTOM,
                                 new Vector3f(rX, rY, rZ),
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ),
-                                new Vector3f(rX + BLOCK_LENGTH, rY, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX, rY, rZ + BLOCK_LENGTH)));
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ),
+                                new Vector3f(rX + UNIT_LENGTH, rY, rZ + UNIT_LENGTH),
+                                new Vector3f(rX, rY, rZ + UNIT_LENGTH)));
                     }
                     // top face
                     if (!block.get().getRelative(BlockFace.TOP).isPresent()) {
                         faces.add(createQuad(type, BlockFace.TOP,
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ),
-                                new Vector3f(rX, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ + BLOCK_LENGTH),
-                                new Vector3f(rX + BLOCK_LENGTH, rY + BLOCK_LENGTH, rZ)));
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ),
+                                new Vector3f(rX, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
+                                new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ)));
                     } else {
                         System.out.println("Not rendering top face");
                     }
