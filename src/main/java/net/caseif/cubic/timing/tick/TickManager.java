@@ -23,29 +23,37 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.cubic.util.helper;
+package net.caseif.cubic.timing.tick;
 
-public class DeltaHelper {
+import net.caseif.cubic.Main;
+import net.caseif.cubic.world.World;
 
-    private static long delta;
-    private static long lastTime = System.nanoTime();
+public class TickManager {
 
-    /**
-     * Returns the delta time in seconds.
-     *
-     * @return The delta time in seconds.
-     */
-    public static float getDelta() {
-        return delta / 1e6f;
+    public static final int TICKS_PER_SECOND = 100;
+    public static final int MILLIS_PER_TICK = (int) (1000f / TICKS_PER_SECOND);
+
+    private World world;
+    private long ticks;
+
+    public TickManager(World world) {
+        this.world = world;
     }
 
-    /**
-     * Updates the delta time.
-     */
-    public static void updateDelta() {
-        long currentTime = System.nanoTime();
-        delta = currentTime - lastTime;
-        lastTime = currentTime;
+    public World getWorld() {
+        return world;
+    }
+
+    public long getTicks() {
+        return ticks;
+    }
+
+    public void start() {
+        Main.SCHEDULER.runRepeatingTask(new TickWorker(this), 0L, MILLIS_PER_TICK);
+    }
+
+    void incrementTicks(int ticks) {
+        this.ticks += ticks;
     }
 
 }

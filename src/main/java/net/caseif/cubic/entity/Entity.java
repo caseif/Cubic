@@ -26,7 +26,7 @@
 package net.caseif.cubic.entity;
 
 import net.caseif.cubic.math.vector.Vector3f;
-import net.caseif.cubic.util.helper.DeltaHelper;
+import net.caseif.cubic.timing.tick.TickManager;
 import net.caseif.cubic.world.World;
 
 import java.util.UUID;
@@ -86,7 +86,7 @@ public abstract class Entity {
 
     public void updatePosition() {
         doCollisionChecks();
-        position = position.add(velocity.multiply(DeltaHelper.getDelta()));
+        position = position.add(velocity.multiply(1f / TickManager.TICKS_PER_SECOND));
     }
 
     private void doCollisionChecks() {

@@ -31,7 +31,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import net.caseif.cubic.Main;
-import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.gl.callback.KeyCallback;
 import net.caseif.cubic.gl.render.BlockRenderer;
 import net.caseif.cubic.gl.render.Camera;
@@ -40,7 +39,6 @@ import net.caseif.cubic.gl.texture.TextureRegistry;
 import net.caseif.cubic.input.KeyListener;
 import net.caseif.cubic.input.MouseListener;
 import net.caseif.cubic.math.matrix.Matrix4f;
-import net.caseif.cubic.util.helper.DeltaHelper;
 import net.caseif.cubic.util.helper.math.MatrixHelper;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -79,8 +77,6 @@ public class GraphicsMain implements Runnable {
     }
 
     private void initGLFW() {
-        DeltaHelper.updateDelta();
-
         glfwSetErrorCallback(errorCallback); // set the error callback
         if (glfwInit() != GL_TRUE) {
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -168,9 +164,9 @@ public class GraphicsMain implements Runnable {
 
             // poll for events (like key events)
             glfwPollEvents();
-
-            Main.world.getEntities().forEach(Entity::updatePosition);
         }
+
+        Main.IS_CLOSING = true;
     }
 
 }

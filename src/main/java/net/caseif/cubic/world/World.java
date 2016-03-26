@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.math.vector.Vector2i;
+import net.caseif.cubic.timing.tick.TickManager;
 import net.caseif.cubic.world.block.Block;
 
 import java.util.Collection;
@@ -44,11 +45,14 @@ public class World {
     public static final int CHUNK_LENGTH = 16;
 
     private String name;
+
+    private final TickManager tickManager = new TickManager(this);
     private Map<Vector2i, Chunk> chunkMap = new HashMap<>();
-    private static Set<Entity> entities = new HashSet<>();
+    private Set<Entity> entities = new HashSet<>();
 
     public World(String name) {
         this.name = name;
+        tickManager.start();
     }
 
     public String getName() {
@@ -90,6 +94,10 @@ public class World {
 
     public void addEntity(Entity entity) {
         entities.add(entity);
+    }
+
+    public TickManager getTickManager() {
+        return tickManager;
     }
 
 }

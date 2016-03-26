@@ -25,11 +25,13 @@
 
 package net.caseif.cubic;
 
+import net.caseif.cubic.entity.Entity;
 import net.caseif.cubic.entity.living.player.Player;
 import net.caseif.cubic.gl.GraphicsMain;
 import net.caseif.cubic.math.vector.Vector2i;
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.math.vector.Vector3i;
+import net.caseif.cubic.timing.scheduler.Scheduler;
 import net.caseif.cubic.world.Chunk;
 import net.caseif.cubic.world.World;
 import net.caseif.cubic.world.block.Block;
@@ -37,12 +39,17 @@ import net.caseif.cubic.world.block.BlockType;
 
 public class Main {
 
+    public static volatile boolean IS_CLOSING = false;
+
+    public static final Scheduler SCHEDULER = new Scheduler();
+
     public static World world;
     public static Player player;
 
     public static void main(String[] args) {
         createDummyWorld();
         initGraphicsThread();
+        startMainLoop();
     }
 
     private static void initGraphicsThread() {
@@ -56,6 +63,12 @@ public class Main {
         world.addChunk(chunk);
         chunk.addBlock(new Block(chunk, new Vector3i(0, 0, 0), BlockType.GRASS));
         player = new Player(world, new Vector3f(0, 0, 2));
+    }
+
+    private static void startMainLoop() {
+        while (!IS_CLOSING) {
+            SCHEDULER.pollTasks();
+        }
     }
 
 }
