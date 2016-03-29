@@ -34,15 +34,16 @@ import net.caseif.cubic.world.World;
 public class Player extends Living {
 
     private static final float SPEED = 2f;
+    private static final Vector3f SIZE = new Vector3f(1f, 2f, 1f);
 
     public Player(World world, Vector3f position) {
-        super(EntityType.PLAYER, SPEED, world, position);
+        super(EntityType.PLAYER, SPEED, world, position, SIZE);
     }
 
     @Override
     public void updatePosition() {
         super.updatePosition();
-        GraphicsMain.CAMERA.setTranslation(this.getPosition());
+        GraphicsMain.CAMERA.setTranslation(this.getPosition().add(0f, getBoundingBox().getSize().getY() / 4, 0f));
     }
 
 }

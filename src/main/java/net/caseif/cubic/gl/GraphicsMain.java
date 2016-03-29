@@ -124,7 +124,7 @@ public class GraphicsMain implements Runnable {
             ex.printStackTrace();
         }
 
-        float fov = 15f;
+        float fov = 20f;
         float znear = 1f;
         float zfar = 10f;
 

@@ -28,7 +28,9 @@ package net.caseif.cubic.world.block;
 import static net.caseif.cubic.world.World.CHUNK_LENGTH;
 import static net.caseif.cubic.world.World.MAX_HEIGHT;
 
+import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.math.vector.Vector3i;
+import net.caseif.cubic.util.BoundingBox;
 import net.caseif.cubic.world.Chunk;
 
 import com.google.common.base.Preconditions;
@@ -37,9 +39,13 @@ import java.util.Optional;
 
 public class Block {
 
+    private static final Vector3f UNIT_SIZE = new Vector3f(1, 1, 1);
+
     private final Chunk owningChunk;
     private final Vector3i position;
     private final BlockType type;
+
+    private final BoundingBox boundingBox;
 
     public Block(Chunk owningChunk, Vector3i position, BlockType type) {
         Preconditions.checkArgument(position.getY() >= 0 && position.getY() < MAX_HEIGHT,
@@ -47,6 +53,8 @@ public class Block {
         this.position = position;
         this.owningChunk = owningChunk;
         this.type = type;
+
+        this.boundingBox = BoundingBox.createFromMinCoord(position.asVector3f(), UNIT_SIZE);
     }
 
     public Chunk getOwningChunk() {
@@ -59,6 +67,10 @@ public class Block {
 
     public BlockType getType() {
         return type;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
     public Optional<Block> getRelative(BlockFace face) {

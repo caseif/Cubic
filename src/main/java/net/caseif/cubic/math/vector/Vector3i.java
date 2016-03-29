@@ -59,6 +59,10 @@ public class Vector3i {
         return new Vector3i(this.x * scalar, this.y * scalar, this.z * scalar);
     }
 
+    public Vector3f asVector3f() {
+        return new Vector3f(this.x, this.y, this.z);
+    }
+
     @Override
     public String toString() {
         return "(" + getX() + ", " + getY() + ", " + getZ() + ")";

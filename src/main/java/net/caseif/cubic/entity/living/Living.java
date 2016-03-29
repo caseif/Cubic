@@ -32,8 +32,8 @@ import net.caseif.cubic.world.World;
 
 public abstract class Living extends Entity {
 
-    protected Living(EntityType type, float speed, World world, Vector3f position) {
-        super(type, speed, world, position);
+    protected Living(EntityType type, float speed, World world, Vector3f position, Vector3f size) {
+        super(type, speed, world, position, size);
     }
 
 }

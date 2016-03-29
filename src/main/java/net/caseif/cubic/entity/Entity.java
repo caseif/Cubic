@@ -27,8 +27,11 @@ package net.caseif.cubic.entity;
 
 import net.caseif.cubic.math.vector.Vector3f;
 import net.caseif.cubic.timing.tick.TickManager;
+import net.caseif.cubic.util.BoundingBox;
 import net.caseif.cubic.world.World;
+import net.caseif.cubic.world.block.Block;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class Entity {
@@ -43,17 +46,26 @@ public abstract class Entity {
     private Vector3f position;
     private Vector3f velocity = new Vector3f(0f, 0f, 0f);
 
-    protected Entity(EntityType type, float speed, World world, Vector3f position) {
+    private BoundingBox boundingBox;
+
+    protected Entity(EntityType type, float speed, World world, Vector3f position, Vector3f size) {
         this.type = type;
         this.speed = speed;
 
         this.world = world;
         this.position = position;
+
+        this.boundingBox = BoundingBox.createFromCenterCoord(position, size);
+
         world.addEntity(this);
     }
 
     public UUID getUniqueId() {
         return uuid;
+    }
+
+    public EntityType getType() {
+        return type;
     }
 
     public float getSpeed() {
@@ -84,24 +96,40 @@ public abstract class Entity {
         this.velocity = velocity;
     }
 
-    public void updatePosition() {
-        //doCollisionChecks(); //TODO: fix collision checks
-        position = position.add(velocity.multiply(1f / TickManager.TICKS_PER_SECOND));
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
     }
 
-    private void doCollisionChecks() {
-        // check x-velocity
-        if (world.getBlock(position.getX() + velocity.getX(), position.getY(), position.getZ()).isPresent()) {
-            velocity = new Vector3f(0f, velocity.getY(), velocity.getZ());
+    public void updatePosition() {
+        doCollisionChecks();
+        position = position.add(velocity.multiply(1f / TickManager.TICKS_PER_SECOND));
+        getBoundingBox().setCenter(position);
+    }
+
+    private boolean doCollisionChecks() {
+        int minX = (int) Math.floor(getBoundingBox().getMinCoord().getX() + velocity.getX());
+        int maxX = (int) Math.floor(getBoundingBox().getMaxCoord().getX() + velocity.getX());
+
+        int minY = (int) Math.floor(getBoundingBox().getMinCoord().getY() + velocity.getY());
+        int maxY = (int) Math.floor(getBoundingBox().getMaxCoord().getY() + velocity.getY());
+
+        int minZ = (int) Math.floor(getBoundingBox().getMinCoord().getZ() + velocity.getZ());
+        int maxZ = (int) Math.floor(getBoundingBox().getMaxCoord().getZ() + velocity.getZ());
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Optional<Block> block = getWorld().getBlock(x, y, z);
+                    if (block.isPresent()) {
+                        Vector3f newVel = getBoundingBox()
+                                .testIntersectionWithVelocity(block.get().getBoundingBox(), velocity);
+                        velocity = new Vector3f(velocity.getX() == 0 ? 0 : newVel.getX(),
+                                velocity.getY() == 0 ? 0 : newVel.getY(), velocity.getZ() == 0 ? 0 : newVel.getZ());
+                    }
+                }
+            }
         }
-        // check y-velocity
-        if (world.getBlock(position.getX(), position.getY() + velocity.getY(), position.getZ()).isPresent()) {
-            velocity = new Vector3f(velocity.getX(), 0f, velocity.getZ());
-        }
-        // check z-velocity
-        if (world.getBlock(position.getX(), position.getY(), position.getZ() + velocity.getZ()).isPresent()) {
-            velocity = new Vector3f(velocity.getX(), velocity.getY(), 0f);
-        }
+        return true;
     }
 
 }

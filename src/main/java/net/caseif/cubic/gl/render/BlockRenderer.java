@@ -53,7 +53,7 @@ import java.util.WeakHashMap;
 
 public class BlockRenderer {
 
-    static final float UNIT_LENGTH = 0.5f;
+    static final float UNIT_LENGTH = 1f;
 
     private static final int positionAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_position");
     private static final int texCoordAttrIndex = glGetAttribLocation(ShaderHelper.cameraShader, "in_texCoord");
@@ -148,8 +148,6 @@ public class BlockRenderer {
                                 new Vector3f(rX, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
                                 new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ + UNIT_LENGTH),
                                 new Vector3f(rX + UNIT_LENGTH, rY + UNIT_LENGTH, rZ)));
-                    } else {
-                        System.out.println("Not rendering top face");
                     }
 
                     faces.forEach(fb -> {
