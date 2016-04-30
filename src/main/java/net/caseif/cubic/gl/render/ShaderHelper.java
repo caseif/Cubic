@@ -25,7 +25,6 @@
 
 package net.caseif.cubic.gl.render;
 
-import static org.lwjgl.opengl.ARBShaderObjects.*;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
@@ -57,12 +56,12 @@ public class ShaderHelper {
         char[] chars = new char[is.available()];
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         br.read(chars);
-        glShaderSourceARB(shaderHandle, new String(chars));
+        glShaderSource(shaderHandle, new String(chars));
 
-        glCompileShaderARB(shaderHandle);
-        int result = glGetObjectParameteriARB(shaderHandle, GL_COMPILE_STATUS);
+        glCompileShader(shaderHandle);
+        int result = glGetShaderi(shaderHandle, GL_COMPILE_STATUS);
         if (result == GL_FALSE) {
-            System.err.println(glGetInfoLogARB(shaderHandle));
+            System.err.println(glGetShaderInfoLog(shaderHandle));
             throw new RuntimeException("Failed to compile GLSL shader from \"" + resource + "\"");
         }
     }
@@ -74,7 +73,7 @@ public class ShaderHelper {
         glLinkProgram(programHandle);
 
         if (glGetProgrami(programHandle, GL_LINK_STATUS) == GL_FALSE) {
-            System.err.println(glGetInfoLogARB(programHandle));
+            System.err.println(glGetShaderInfoLog(programHandle));
             throw new RuntimeException("Failed to link shader program!");
         }
 
