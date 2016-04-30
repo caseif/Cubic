@@ -73,7 +73,7 @@ public class ShaderHelper {
         glLinkProgram(programHandle);
 
         if (glGetProgrami(programHandle, GL_LINK_STATUS) == GL_FALSE) {
-            System.err.println(glGetShaderInfoLog(programHandle));
+            System.err.println(glGetProgramInfoLog(programHandle));
             throw new RuntimeException("Failed to link shader program!");
         }
 
